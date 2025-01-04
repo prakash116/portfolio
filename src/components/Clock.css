@@ -1,0 +1,38 @@
+    
+  .clock {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    background-color: rgb(0, 0, 36);
+    box-shadow: 0px 0px 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .clock::before {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: gainsboro;
+    z-index: 2;
+  }
+  
+  .hand {
+    position: absolute;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  
+  .hand i {
+    position: absolute;
+    background-color: var(--clr);
+    width: var(--w);
+    height: var(--h);
+    border-radius: 8px;
+  }
