@@ -28,9 +28,9 @@ function Header() {
   //   }
   
   //   return greeting;
-  };
+  // };
   
-  getGreeting();
+  // getGreeting();
 
   
 
