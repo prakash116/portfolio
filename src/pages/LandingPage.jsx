@@ -9,8 +9,11 @@ function LandingPage() {
   return (
     <>
       <Home/>
+      <hr />
       <Project/>
+      <hr />
       <AboutMe/>
+      <hr />
       <Contact/>
     </>
   )

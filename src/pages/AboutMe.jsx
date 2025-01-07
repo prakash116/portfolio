@@ -5,7 +5,8 @@ import { FaSquareWhatsapp } from "react-icons/fa6";
 import { IoLogoLinkedin } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import { FaPhoneSquare } from "react-icons/fa";
-
+import EduExe from "../components/EduExe";
+import { NavLink } from "react-router-dom";
 
 function AboutMe() {
   function viewPdf() {
@@ -24,8 +25,8 @@ function AboutMe() {
       <div className="h-[75vh] w-full md:flex">
         <div className="h-[30vh] md:w-[30vw] md:h-full w-full flex flex-col justify-center items-center md:gap-4 gap-1">
           <img
-            className="rounded-sm h-[27vh] md:h-[50vh] md:w-[50vh] object-contain"
-            src=""
+            className="rounded-sm h-[27vh] md:h-[50vh] md:w-[50vh] object-cover object-center"
+            src="/images/I.jpg"
             alt="Description of the image"
             style={{ boxShadow: "4px 4px 6px rgba(255, 255, 0, 0.4)" }}
           />
@@ -65,42 +66,47 @@ function AboutMe() {
           </div>
           <dev>
             <div className="flex justify-center gap-6 mt-5">
-              <a>
+              <NavLink target="_blank" to="https://github.com/prakash116">
                 <FaGithubSquare color="white" size={35} />
-              </a>
-              <a>
+              </NavLink>
+              <NavLink
+                target="_blank"
+                to="https://www.linkedin.com/in/prakashmani87/"
+              >
                 <IoLogoLinkedin color="white" size={35} />
-              </a>
-              <a>
+              </NavLink>
+              <NavLink target="_blank" to="mailto:prakashmanig000@gmail.com">
                 <MdEmail color="white" size={35} />
-              </a>
-              <a>
+              </NavLink>
+              <NavLink target="_blank" to="https://wa.me/qr/XZNOZHJWQBQNG1">
                 <FaSquareWhatsapp color="white" size={35} />
-              </a>
-              <a>
+              </NavLink>
+              <NavLink target="_blank" to="tel:+918795901180">
                 <FaPhoneSquare color="white" size={35} />
-              </a>
+              </NavLink>
             </div>
           </dev>
         </div>
         <div className="hidden md:flex flex-col justify-center items-center w-[15vw] h-[75vh]">
-  <div className="text-white text-[5vw] text-center font-bold tracking-widest leading-none">
-    {letters.map((letter, index) => (
-      <h1
-        key={index}
-        className="block font-extrabold text-white text-image"
-        style={{ backgroundImage: `url(${letter.image})` }}
-      >
-        {letter.char}
-      </h1>
-    ))}
-    <div className="flex flex-col">
-      <span className="text-lg">Stack</span>
-      <span className="text-lg ">Developer</span>
-    </div>
-  </div>
-</div>
-
+          <div className="text-white text-[5vw] text-center font-bold tracking-widest leading-none">
+            {letters.map((letter, index) => (
+              <h1
+                key={index}
+                className="block font-extrabold text-white text-image"
+                style={{ backgroundImage: `url(${letter.image})` }}
+              >
+                {letter.char}
+              </h1>
+            ))}
+            <div className="flex flex-col">
+              <span className="text-lg">Stack</span>
+              <span className="text-lg ">Developer</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <EduExe />
       </div>
     </>
   );
