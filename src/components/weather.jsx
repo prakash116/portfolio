@@ -22,22 +22,22 @@ const Weather = () => {
     );
   }, []);
 
-  // useEffect(() => {
-  //   if (lat && lon) {
-  //     fetch(
-  //       `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=ae6fde7d5972cab3bd9eba9ca929dd55`
-  //     )
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         setWeather(data);
-  //         setLoading(false);
-  //       })
-  //       .catch((err) => {
-  //         console.error(err);
-  //         setLoading(false);
-  //       });
-  //   }
-  // }, [lat, lon]);
+  useEffect(() => {
+    if (lat && lon) {
+      fetch(
+        `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=ae6fde7d5972cab3bd9eba9ca929dd55`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setWeather(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setLoading(false);
+        });
+    }
+  }, [lat, lon]);
 
   if(loading) {
     console.log("Loading weather");

@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import Sidebar from "./Sidebar";
 function Header() {
 
-//  const userName = prompt("Enter your Nickname")
+ const userName = prompt("Enter your Nickname")
  
  let greeting;
 
@@ -47,7 +47,7 @@ function Header() {
             <img className="block md:hidden rounded-md w-[6.5vh]" src="images/logo1.png" alt="" />
             <img className="hidden md:block rounded-md w-[15vh] md:w-[26vh]" src="images/logo2.png" alt="" />
         </NavLink>
-         {/* <h1 className="md:text-sm text-[2vh] absolute left-[20vw] md:left-[35vw] text-yellow-200 font-serif">Welcome, {userName ? (`${userName+ " Sir/Ma'am"}`):("Sir")} <span>{greeting}</span></h1> */}
+         <h1 className="md:text-sm text-[2vh] absolute left-[20vw] md:left-[35vw] text-yellow-200 font-serif">Welcome, {userName ? (`${userName+ " Sir/Ma'am"}`):("Sir")} <span>{greeting}</span></h1>
           <ul className="h-14  hidden space-x-1 md:flex absolute right-10 ">
           <li className="flex">
               <NavLink
