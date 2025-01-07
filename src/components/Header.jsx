@@ -40,7 +40,7 @@ function Header() {
         <div className="container flex justify-between items-center h-16 ml-3">
         <NavLink
             rel="noopener noreferrer"
-            to="/"
+            to="/portfolio"
             aria-label="Back to homepage"
             className="flex items-center hover:rounded-md"
           >
