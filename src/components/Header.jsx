@@ -4,30 +4,30 @@ import { NavLink } from "react-router-dom";
 import Sidebar from "./Sidebar";
 function Header() {
 
- const userName = prompt("Enter your Nickname")
+//  const userName = prompt("Enter your Nickname")
  
- let greeting;
+//  let greeting;
 
-  const getGreeting = () => {
-    const now = new Date(); 
-    const hours = now.getHours();
+  // const getGreeting = () => {
+  //   const now = new Date(); 
+  //   const hours = now.getHours();
 
-    switch (true) {
-      case hours >= 4 && hours < 12:
-        greeting = "Good Morning";
-        break;
-      case hours >= 12 && hours < 17:
-        greeting = "Good Afternoon";
-        break;
-      case hours >= 17 && hours < 22:
-        greeting = "Good Evening";
-        break;
-      default:
-        greeting = "Namaskar";
-        break;
-    }
+  //   switch (true) {
+  //     case hours >= 4 && hours < 12:
+  //       greeting = "Good Morning";
+  //       break;
+  //     case hours >= 12 && hours < 17:
+  //       greeting = "Good Afternoon";
+  //       break;
+  //     case hours >= 17 && hours < 22:
+  //       greeting = "Good Evening";
+  //       break;
+  //     default:
+  //       greeting = "Namaskar";
+  //       break;
+  //   }
   
-    return greeting;
+  //   return greeting;
   };
   
   getGreeting();
@@ -47,7 +47,7 @@ function Header() {
             <img className="block md:hidden rounded-md w-[6.5vh]" src="images/logo1.png" alt="" />
             <img className="hidden md:block rounded-md w-[15vh] md:w-[26vh]" src="images/logo2.png" alt="" />
         </NavLink>
-         <h1 className="md:text-sm text-[2vh] absolute left-[20vw] md:left-[35vw] text-yellow-200 font-serif">Welcome, {userName ? (`${userName+ " Sir/Ma'am"}`):("Sir")} <span>{greeting}</span></h1>
+         {/* <h1 className="md:text-sm text-[2vh] absolute left-[20vw] md:left-[35vw] text-yellow-200 font-serif">Welcome, {userName ? (`${userName+ " Sir/Ma'am"}`):("Sir")} <span>{greeting}</span></h1> */}
           <ul className="h-14  hidden space-x-1 md:flex absolute right-10 ">
           <li className="flex">
               <NavLink

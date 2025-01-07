@@ -7,20 +7,20 @@ const Weather = () => {
   const [lon, setLon] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setLat(latitude);
-        setLon(longitude);
-      },
-      (err) => {
-        alert("Unable to find your location");
-        console.error(err);
-        setLoading(false);
-      }
-    );
-  }, []);
+  // useEffect(() => {
+  //   navigator.geolocation.getCurrentPosition(
+  //     (position) => {
+  //       const { latitude, longitude } = position.coords;
+  //       setLat(latitude);
+  //       setLon(longitude);
+  //     },
+  //     (err) => {
+  //       alert("Unable to find your location");
+  //       console.error(err);
+  //       setLoading(false);
+  //     }
+  //   );
+  // }, []);
 
   useEffect(() => {
     if (lat && lon) {
