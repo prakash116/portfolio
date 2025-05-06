@@ -112,12 +112,12 @@ const Navbar = () => {
   }, [isMobile, isOpen]);
 
   const navItems = [
-    { name: 'Home', path: '/portfolio/home', icon: <Home size={18} /> },
-    { name: 'About Me', path: '/portfolio/about', icon: <User size={18} /> },
-    { name: 'Projects', path: '/portfolio/project', icon: <LayoutTemplate size={18} /> },
-    { name: 'Skills', path: '/portfolio/skill', icon: <Code2 size={18} /> },
-    { name: 'Services', path: '/portfolio/services', icon: <FaServicestack size={18} /> }, 
-    { name: 'Contact', path: '/portfolio/contact', icon: <Mail size={18} /> },
+    { name: 'Home', path: 'home', icon: <Home size={18} /> },
+    { name: 'About Me', path: 'about', icon: <User size={18} /> },
+    { name: 'Projects', path: 'project', icon: <LayoutTemplate size={18} /> },
+    { name: 'Skills', path: 'skill', icon: <Code2 size={18} /> },
+    { name: 'Services', path: 'services', icon: <FaServicestack size={18} /> }, 
+    { name: 'Contact', path: 'contact', icon: <Mail size={18} /> },
   ];
 
   const itemVariants = {
@@ -184,7 +184,7 @@ const Navbar = () => {
         <div className="flex justify-between h-10 mx-auto items-center max-w-7xl">
           {/* Logo with Three.js animation */}
           <NavLink 
-            to="/portfolio/" 
+            to="/" 
             aria-label="Back to homepage" 
             className="flex items-center p-2"
           >

@@ -96,7 +96,7 @@ function App() {
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route
-              path="/portfolio"
+              path="/"
               element={
                 <PageLayout>
                   <Landing />
@@ -104,7 +104,7 @@ function App() {
               }
             />
             <Route
-              path="/portfolio/home"
+              path="/home"
               element={
                 <PageLayout>
                   <HeroSection />
@@ -112,7 +112,7 @@ function App() {
               }
             />
             <Route
-              path="/portfolio/about"
+              path="/about"
               element={
                 <PageLayout>
                   <AboutPage />
@@ -120,7 +120,7 @@ function App() {
               }
             />
             <Route
-              path="/portfolio/project"
+              path="/project"
               element={
                 <PageLayout>
                   <ProjectsPage />
@@ -128,7 +128,7 @@ function App() {
               }
             />
             <Route
-              path="/portfolio/skill"
+              path="/skill"
               element={
                 <PageLayout>
                   <SkillsPage />
@@ -136,7 +136,7 @@ function App() {
               }
             />
             <Route
-              path="/portfolio/services"
+              path="/services"
               element={
                 <PageLayout>
                   <Services />
@@ -144,7 +144,7 @@ function App() {
               }
             />
             <Route
-              path="/portfolio/contact"
+              path="/contact"
               element={
                 <PageLayout>
                   <ContactUs />
