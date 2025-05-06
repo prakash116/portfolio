@@ -205,7 +205,7 @@ const ProfileCard = () => {
           <div className="relative h-64 w-64 rounded-full border-4 border-white/10 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br"></div>
             <img 
-              src="/portfolio.prakash.png" 
+              src="/portfolio/prakash.png" 
               alt="Profile"
               className="h-full w-full object-cover mix-blend-luminosity"
             />
