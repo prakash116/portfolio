@@ -15,13 +15,14 @@ import {
   ServerCog,
 } from "lucide-react";
 import { IoLogoJavascript } from "react-icons/io";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import * as THREE from "three";
 import ProfileCard from "../MyInfo";
 
 const AboutPage = () => {
   const containerRef = useRef(null);
   const mountRef = useRef(null);
+  const [webGLError, setWebGLError] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -33,102 +34,190 @@ const AboutPage = () => {
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -50]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.3], [1, 1, 0]);
 
+  // Check WebGL support
+  const isWebGLAvailable = useCallback(() => {
+    try {
+      const canvas = document.createElement('canvas');
+      return !!(
+        window.WebGLRenderingContext &&
+        (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+      );
+    } catch (e) {
+      return false;
+    }
+  }, []);
+
+  // Handle resize function
+  const handleResize = useCallback((camera, renderer) => {
+    if (!camera || !renderer) return;
+    
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }, []);
+
   // Three.js setup
   useEffect(() => {
-    // Three.js Scene Setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: true,
-      powerPreference: "high-performance",
-    });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mountRef.current.appendChild(renderer.domElement);
+    if (!mountRef.current || !isWebGLAvailable()) {
+      setWebGLError(true);
+      return;
+    }
 
-    // Cosmic Background
-    const createStarfield = () => {
-      const starsGeometry = new THREE.BufferGeometry();
-      const starsMaterial = new THREE.PointsMaterial({
-        color: 0xffffff,
-        size: 0.1,
-        transparent: true,
-        opacity: 0.8,
-        blending: THREE.AdditiveBlending,
-      });
+    let scene, camera, renderer;
+    let animationId;
+    let resizeObserver;
 
-      const starsVertices = [];
-      for (let i = 0; i < 5000; i++) {
-        const x = (Math.random() - 0.5) * 2000;
-        const y = (Math.random() - 0.5) * 2000;
-        const z = (Math.random() - 0.5) * 2000;
-        starsVertices.push(x, y, z);
+    const initThreeJS = () => {
+      try {
+        // Scene setup
+        scene = new THREE.Scene();
+
+        // Camera setup
+        camera = new THREE.PerspectiveCamera(
+          75,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
+
+        // Renderer setup with error handling
+        try {
+          renderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: true,
+            powerPreference: "high-performance",
+          });
+        } catch (rendererError) {
+          console.error("WebGLRenderer creation failed:", rendererError);
+          setWebGLError(true);
+          return;
+        }
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // Safely append renderer DOM element
+        if (mountRef.current && renderer.domElement) {
+          mountRef.current.appendChild(renderer.domElement);
+        } else {
+          setWebGLError(true);
+          return;
+        }
+
+        // Cosmic Background
+        const createStarfield = () => {
+          const starsGeometry = new THREE.BufferGeometry();
+          const starsMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.1,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending,
+          });
+
+          const starsVertices = [];
+          for (let i = 0; i < 5000; i++) {
+            const x = (Math.random() - 0.5) * 2000;
+            const y = (Math.random() - 0.5) * 2000;
+            const z = (Math.random() - 0.5) * 2000;
+            starsVertices.push(x, y, z);
+          }
+
+          starsGeometry.setAttribute(
+            "position",
+            new THREE.Float32BufferAttribute(starsVertices, 3)
+          );
+          const starField = new THREE.Points(starsGeometry, starsMaterial);
+          scene.add(starField);
+        };
+        createStarfield();
+
+        // Nebula Effect
+        const createNebula = () => {
+          const nebulaGeometry = new THREE.SphereGeometry(50, 32, 32);
+          const nebulaMaterial = new THREE.MeshBasicMaterial({
+            color: 0x4a00e0,
+            transparent: true,
+            opacity: 0.15,
+            blending: THREE.AdditiveBlending,
+          });
+          const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
+          nebula.position.set(20, 0, -100);
+          scene.add(nebula);
+
+          const nebula2 = nebula.clone();
+          nebula2.material = nebula.material.clone();
+          nebula2.material.color.setHex(0x00b4d8);
+          nebula2.position.set(-30, 40, -150);
+          nebula2.scale.set(0.7, 0.7, 0.7);
+          scene.add(nebula2);
+        };
+        createNebula();
+
+        // Camera Position
+        camera.position.z = 40;
+        camera.position.y = 0;
+
+        // Animation
+        const animate = () => {
+          animationId = requestAnimationFrame(animate);
+          if (renderer && scene && camera) {
+            try {
+              renderer.render(scene, camera);
+            } catch (error) {
+              console.error("Rendering error:", error);
+              cancelAnimationFrame(animationId);
+              setWebGLError(true);
+            }
+          }
+        };
+        animate();
+
+        // Handle resize with observer
+        resizeObserver = new ResizeObserver(() => {
+          handleResize(camera, renderer);
+        });
+        resizeObserver.observe(document.body);
+
+        // Handle context lost
+        renderer.domElement.addEventListener('webglcontextlost', (event) => {
+          console.warn('WebGL context lost');
+          event.preventDefault();
+          setWebGLError(true);
+        }, false);
+
+        renderer.domElement.addEventListener('webglcontextrestored', () => {
+          console.log('WebGL context restored');
+          initThreeJS();
+        }, false);
+
+      } catch (error) {
+        console.error("Three.js initialization error:", error);
+        setWebGLError(true);
       }
-
-      starsGeometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(starsVertices, 3)
-      );
-      const starField = new THREE.Points(starsGeometry, starsMaterial);
-      scene.add(starField);
     };
-    createStarfield();
 
-    // Nebula Effect
-    const createNebula = () => {
-      const nebulaGeometry = new THREE.SphereGeometry(50, 32, 32);
-      const nebulaMaterial = new THREE.MeshBasicMaterial({
-        color: 0x4a00e0,
-        transparent: true,
-        opacity: 0.15,
-        blending: THREE.AdditiveBlending,
-      });
-      const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
-      nebula.position.set(20, 0, -100);
-      scene.add(nebula);
-
-      const nebula2 = nebula.clone();
-      nebula2.material = nebula.material.clone();
-      nebula2.material.color.setHex(0x00b4d8);
-      nebula2.position.set(-30, 40, -150);
-      nebula2.scale.set(0.7, 0.7, 0.7);
-      scene.add(nebula2);
-    };
-    createNebula();
-
-    // Camera Position
-    camera.position.z = 40;
-    camera.position.y = 0;
-
-    // Animation
-    const animate = () => {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    // Handle resize
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener("resize", handleResize);
+    initThreeJS();
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      if (mountRef.current && mountRef.current.contains(renderer.domElement)) {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      
+      if (mountRef.current && renderer?.domElement) {
         mountRef.current.removeChild(renderer.domElement);
       }
-      renderer.dispose();
+
+      // Dispose of Three.js resources
+      if (renderer) {
+        renderer.dispose();
+      }
     };
-  }, []);
+  }, [isWebGLAvailable, handleResize]);
 
   // Education data
   const education = [
@@ -176,7 +265,6 @@ const AboutPage = () => {
       ],
       icon: <ServerCog className="w-6 h-6 text-green-500" />,
     },
-      
     {
       role: "Frontend Developer Intern",
       company: "Analyze Infotech Pvt. Ltd., Lucknow, Uttar Pradesh",
@@ -201,7 +289,6 @@ const AboutPage = () => {
       ],
       icon: <Palette className="w-6 h-6 text-pink-400" />,
     },
-    
   ];
 
   // Skills data
@@ -242,16 +329,20 @@ const AboutPage = () => {
       icon: <Cloud className="w-5 h-5 text-orange-400" />,
       color: "bg-orange-500",
     },
-    
   ];
 
   return (
     <div
       ref={containerRef}
       className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-950 overflow-hidden relative"
+      style={{ position: 'relative' }} // Ensure container has relative position
     >
       {/* Three.js Canvas */}
-      <div ref={mountRef} className="fixed inset-0 pointer-events-none z-0" />
+      {webGLError ? (
+        <div className="fixed inset-0 bg-gradient-to-br from-gray-900 to-gray-950 z-0" />
+      ) : (
+        <div ref={mountRef} className="fixed inset-0 pointer-events-none z-0" />
+      )}
 
       {/* Floating Particles Overlay */}
       <div className="fixed inset-0 pointer-events-none z-1">

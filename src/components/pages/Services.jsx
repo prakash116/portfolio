@@ -175,7 +175,7 @@ const FloatingTechIcons = () => {
 const ServicesBackground = () => {
   const meshRef = useRef();
   const { viewport } = useThree();
-  const texture = useTexture("/grid-texture.jpg");
+  const texture = useTexture("/portfolio/grid-texture.jpg");
 
   useFrame((state) => {
     if (meshRef.current) {
