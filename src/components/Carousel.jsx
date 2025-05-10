@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
+import { NavLink } from 'react-router-dom';
 import {
   FaCode,
   FaArrowRight,
@@ -97,7 +98,7 @@ readFile();`,
     useCases: ["Backend services", "CLI tools", "Web servers"],
     projectIdeas: ["API gateway", "Web scraper", "Automation scripts"],
     color: "#339933",
-    docsLink: "https://nodejs.org/en/docs/",
+    docsLink: "https://nodejs.org/api/documentation.html",
     githubLink: "https://github.com/nodejs/node",
   },
   {
@@ -532,15 +533,15 @@ const Carousel = () => {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.5 }}
                   >
-                    <a
-                      href={currentTech.docsLink}
+                    <NavLink
+                      to={currentTech.docsLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center text-sm px-3 py-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
                     >
                       <FaExternalLinkAlt className="mr-2" />
                       Docs
-                    </a>
+                    </NavLink>
                     <a
                       href={currentTech.githubLink}
                       target="_blank"

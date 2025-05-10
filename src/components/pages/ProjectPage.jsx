@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { TiShoppingCart } from "react-icons/ti";
 import { GiLift } from "react-icons/gi";
+import toast from "react-hot-toast";
 
 const ProjectsPage = () => {
   const mountRef = useRef(null);
@@ -54,31 +55,58 @@ const ProjectsPage = () => {
       title: "Chat Application",
       description:
         "Real-time chat platform with user authentication, Socket.IO integration, and a responsive UI.",
-      technologies: ["Tailwind", "React", "Zustand", "Node.js", "Express.js", "Socket.IO", "MongoDB"],
+      technologies: [
+        "Tailwind",
+        "React",
+        "Zustand",
+        "Node.js",
+        "Express.js",
+        "Socket.IO",
+        "MongoDB",
+      ],
       year: "2024",
       icon: <MessageCircle className="w-6 h-6 text-emerald-400" />,
       accent: "purple",
+      git: "https://github.com/prakash116/Chat-App.git",
+      url: "https://chat-app-atkl.onrender.com/",
     },
     {
       title: "Library Management System",
-      description: "A web-based system for managing book inventories, user records, and issue/return tracking.",
+      description:
+        "A web-based system for managing book inventories, user records, and issue/return tracking.",
       technologies: ["React", "Redux", "Node.js", "Express", "MongoDB"],
       year: "2024",
       icon: <BookOpen className="w-6 h-6 text-blue-400" />,
       accent: "blue",
+      git: "https://github.com/prakash116/LMS.git",
     },
     {
       title: "Media Storage Solution",
-      description: "Secure cloud-based file storage with encryption and sharing capabilities.",
-      technologies: ["Cloudinary", "React", "Context API", "Node.js", "Express"],
+      description:
+        "Secure cloud-based file storage with encryption and sharing capabilities.",
+      technologies: [
+        "Cloudinary",
+        "React",
+        "Context API",
+        "Node.js",
+        "Express",
+      ],
       year: "2024",
       icon: <Cloud className="w-6 h-6 text-blue-400" />,
       accent: "blue",
+      git: "https://github.com/prakash116/MediaCaptureAndStorage.git",
     },
     {
       title: "Vehicle Renting",
-      description: "Online vehicle rental platform with booking management and user-friendly interface.",
-      technologies: ["Bootstrap","JavaScript", "React", "Context API", "API Integration"],
+      description:
+        "Online vehicle rental platform with booking management and user-friendly interface.",
+      technologies: [
+        "Bootstrap",
+        "JavaScript",
+        "React",
+        "Context API",
+        "API Integration",
+      ],
       year: "2023",
       icon: <Car className="w-6 h-6 text-orange-400" />,
       accent: "orange",
@@ -355,6 +383,25 @@ const ProjectsPage = () => {
     return colors[accent] || 0xffffff;
   };
 
+  const handleCode = (index) => {
+    if (projects[index].git) {
+      console.log("Project link:", projects[index].git);
+      window.open(projects[index].git, "_blank", "noopener,noreferrer");
+    } else {
+      toast.success("Comming Soon");
+    }
+  };
+
+  const handleDemo = (index) => {
+    if(projects[index].url){
+       console.log("Project link:", projects[index].url);
+      window.open(projects[index].url, "_blank", "noopener,noreferrer"); 
+    }
+    else{
+      toast.success("Comming Soon")
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-950 overflow-hidden relative">
       {/* Cosmic Background Canvas */}
@@ -543,22 +590,22 @@ const ProjectsPage = () => {
                       </div>
 
                       <div className="flex space-x-3 mt-auto pt-4 border-t border-gray-800">
-                        <motion.a
-                          href="#"
+                        <motion.button
+                          onClick={() => handleCode(index)}
                           whileHover={{ y: -2 }}
                           className={`flex items-center px-4 py-2 bg-gray-800/70 text-gray-300 rounded-lg text-sm font-medium transition hover:bg-${project.accent}-900/30 border border-${project.accent}-400/20 group-hover:border-${project.accent}-400/40`}
                         >
                           <Github className="w-4 h-4 mr-2" />
                           Code
-                        </motion.a>
-                        <motion.a
-                          href="#"
+                        </motion.button>
+                        <motion.button
+                          onClick={() => handleDemo(index)}
                           whileHover={{ y: -2, scale: 1.02 }}
                           className={`flex items-center px-4 py-2 bg-gradient-to-r from-${project.accent}-500 to-${project.accent}-600 text-white rounded-lg text-sm font-medium transition opacity-90 hover:opacity-100 shadow-md hover:shadow-${project.accent}-500/30`}
                         >
                           <ExternalLink className="w-4 h-4 mr-2" />
                           Live Demo
-                        </motion.a>
+                        </motion.button>
                       </div>
                     </div>
                   </div>

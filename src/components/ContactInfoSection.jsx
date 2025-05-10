@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Github, Linkedin, Twitter } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 const ContactInfoSection = () => {
+  const MotionNavLink = motion(NavLink);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
@@ -53,33 +56,33 @@ const ContactInfoSection = () => {
           <div className="mt-10">
             <h3 className="text-lg font-medium text-white mb-4">Follow Me</h3>
             <div className="flex space-x-4">
-              <motion.a
-                href="https://github.com"
+              <MotionNavLink
+                to="https://github.com/prakash116"
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -3 }}
                 className="p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-gray-300 hover:text-white transition-colors"
               >
                 <Github className="w-6 h-6" />
-              </motion.a>
-              <motion.a
-                href="https://linkedin.com"
+              </MotionNavLink>
+              <MotionNavLink
+                to="https://www.linkedin.com/in/prakashmani87/"
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -3 }}
                 className="p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-gray-300 hover:text-white transition-colors"
               >
                 <Linkedin className="w-6 h-6" />
-              </motion.a>
-              <motion.a
-                href="https://twitter.com"
+              </MotionNavLink>
+              <MotionNavLink
+                to="https://x.com/prakashmani87"
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ y: -3 }}
                 className="p-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg text-gray-300 hover:text-white transition-colors"
               >
                 <Twitter className="w-6 h-6" />
-              </motion.a>
+              </MotionNavLink>
             </div>
           </div>
         </div>

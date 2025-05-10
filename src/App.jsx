@@ -11,6 +11,7 @@ import ContactUs from "./components/pages/ContactUs";
 import { motion, AnimatePresence } from "framer-motion";
 import Landing from "./components/pages/Landing";
 import Services from "./components/pages/Services";
+import { Toaster } from "react-hot-toast";
 
 // Loading component with Framer Motion animations
 const LoadingScreen = () => {
@@ -155,6 +156,7 @@ function App() {
         </AnimatePresence>
       </div>
       <AnimatedFooter />
+      <div><Toaster/></div>
     </>
   );
 }
