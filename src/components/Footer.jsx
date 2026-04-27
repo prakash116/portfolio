@@ -1,556 +1,362 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import {
+  ArrowUpRight,
   Github,
-  Twitter,
+  Heart,
   Linkedin,
   Mail,
-  Phone,
   MapPin,
-  Code as CodeIcon,
-  Heart,
-  Send,
-  ArrowRight,
-  Box,
-  Rss,
-  Image as ImageIcon,
+  Phone,
+  Sparkles,
+  Twitter,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import * as THREE from "three";
 
-const AnimatedFooter = () => {
+const socialLinks = [
+  {
+    name: "GitHub",
+    href: "https://github.com/prakash116",
+    icon: Github,
+  },
+  {
+    name: "Twitter",
+    href: "https://x.com/prakashmani87",
+    icon: Twitter,
+  },
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/in/prakashmani87/",
+    icon: Linkedin,
+  },
+];
+
+const quickLinks = [
+  { name: "Home", to: "/home" },
+  { name: "About Me", to: "/about" },
+  { name: "Projects", to: "/project" },
+  { name: "Skills", to: "/skill" },
+  { name: "Services", to: "/services" },
+  { name: "Contact", to: "/contact" },
+];
+
+const contactInfo = [
+  {
+    label: "Email",
+    value: "prakashmanig000@gmail.com",
+    href: "mailto:prakashmanig000@gmail.com",
+    icon: Mail,
+  },
+  {
+    label: "Phone",
+    value: "+91 8795901180",
+    href: "tel:+918795901180",
+    icon: Phone,
+  },
+  {
+    label: "Location",
+    value: "Azadpur, Delhi 110033",
+    href: "https://maps.google.com/?q=Azadpur,Delhi,110033",
+    icon: MapPin,
+  },
+];
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-80px" },
+  transition: { duration: 0.55, ease: "easeOut" },
+};
+
+function Footer() {
   const currentYear = new Date().getFullYear();
-  const threeContainerRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const rendererRef = useRef(null);
-  const controlsRef = useRef(null);
-  const animationRef = useRef(null);
-  const shapesRef = useRef([]);
-  const modelViewerRef = useRef(null);
-  const [webGLError, setWebGLError] = useState(false);
-  const MotionNavLink = motion(NavLink);
-  // Social links data
-  const socialLinks = [
-    {
-      name: "GitHub",
-      icon: <Github className="w-5 h-5" />,
-      url: "https://github.com/prakash116",
-    },
-    {
-      name: "Twitter",
-      icon: <Twitter className="w-5 h-5" />,
-      url: "https://x.com/prakashmani87",
-    },
-    {
-      name: "LinkedIn",
-      icon: <Linkedin className="w-5 h-5" />,
-      url: "https://www.linkedin.com/in/prakashmani87/",
-    },
-  ];
+  const backgroundRef = useRef(null);
+  const [webglEnabled, setWebglEnabled] = useState(true);
 
-  // Quick links data
-  const quickLinks = [
-    { name: "Home", url: "/home" },
-    { name: "About Me", url: "/about" },
-    { name: "Projects", url: "/project" },
-    { name: "Skills", url: "/skill" },
-    { name: "Services", url: "/services" },
-    { name: "Contact", url: "/contact" },
-  ];
-
-  // Contact info data
-  const contactInfo = [
-    { icon: <Mail className="w-5 h-5" />, text: "prakashmanig000@gmail.com" },
-    { icon: <Phone className="w-5 h-5" />, text: "+91 8795901180" },
-    { icon: <MapPin className="w-5 h-5" />, text: "Azadpur, Delhi 110033" },
-  ];
-
-  // Check WebGL support
-  const isWebGLAvailable = () => {
-    try {
-      const canvas = document.createElement("canvas");
-      return !!(
-        window.WebGLRenderingContext &&
-        (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
-      );
-    } catch (e) {
-      return false;
-    }
-  };
-
-  // Initialize Three.js scene
   useEffect(() => {
-    if (!threeContainerRef.current || !isWebGLAvailable()) {
-      setWebGLError(true);
-      return;
+    const container = backgroundRef.current;
+    if (!container) return undefined;
+
+    const canvas = document.createElement("canvas");
+    const gl =
+      canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+
+    if (!gl) {
+      setWebglEnabled(false);
+      return undefined;
     }
 
-    let cleanup = () => {};
+    let frameId;
+    const scene = new THREE.Scene();
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: false,
+      powerPreference: "high-performance",
+    });
+    const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 100);
+    camera.position.set(0, 0, 22);
 
-    try {
-      // Scene setup
-      const scene = new THREE.Scene();
-      sceneRef.current = scene;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
 
-      // Camera setup
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
+    const group = new THREE.Group();
+    scene.add(group);
+    const clock = new THREE.Clock();
+
+    const shapes = [];
+    const geometryPool = [
+      new THREE.IcosahedronGeometry(1.25, 0),
+      new THREE.OctahedronGeometry(1.35, 0),
+      new THREE.TorusGeometry(1.1, 0.24, 16, 36),
+      new THREE.ConeGeometry(1, 2.3, 16),
+    ];
+
+    for (let index = 0; index < 16; index += 1) {
+      const geometry = geometryPool[index % geometryPool.length];
+      const material = new THREE.MeshBasicMaterial({
+        color: index % 3 === 0 ? 0xff9bd2 : index % 2 === 0 ? 0xb794f4 : 0x7df9ff,
+        wireframe: true,
+        transparent: true,
+        opacity: index % 3 === 0 ? 0.95 : 0.72,
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(
+        (Math.random() - 0.5) * 34,
+        (Math.random() - 0.5) * 16,
+        (Math.random() - 0.5) * 16
       );
-      camera.position.z = 25;
-      camera.position.y = 5;
-      cameraRef.current = camera;
-
-      // Renderer setup with error handling
-      let renderer;
-      try {
-        renderer = new THREE.WebGLRenderer({
-          alpha: false,
-          antialias: true,
-          powerPreference: "high-performance",
-        });
-      } catch (rendererError) {
-        console.error("WebGLRenderer creation failed:", rendererError);
-        setWebGLError(true);
-        return;
-      }
-
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor(0x111111, 1);
-      rendererRef.current = renderer;
-
-      // Safely append renderer DOM element
-      if (threeContainerRef.current && renderer.domElement) {
-        threeContainerRef.current.appendChild(renderer.domElement);
-      } else {
-        setWebGLError(true);
-        return;
-      }
-
-      // Controls setup
-      const controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableZoom = false;
-      controls.enablePan = false;
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.5;
-      controlsRef.current = controls;
-
-      // Enhanced lighting
-      const ambientLight = new THREE.AmbientLight(0x404040, 2);
-      scene.add(ambientLight);
-
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
-      directionalLight.position.set(1, 1, 1);
-      scene.add(directionalLight);
-
-      // Create floating shapes
-      const createShapes = () => {
-        const shapes = [];
-        const geometryTypes = [
-          new THREE.IcosahedronGeometry(1, 0),
-          new THREE.TorusGeometry(0.8, 0.2, 16, 32),
-          new THREE.OctahedronGeometry(1, 0),
-          new THREE.ConeGeometry(1, 2, 32),
-        ];
-
-        for (let i = 0; i < 12; i++) {
-          const geometry =
-            geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-          const material = new THREE.MeshPhongMaterial({
-            color: new THREE.Color(
-              Math.random() * 0.7 + 0.3,
-              Math.random() * 0.7 + 0.3,
-              Math.random() * 0.7 + 0.3
-            ),
-            transparent: true,
-            opacity: 0.9,
-            wireframe: Math.random() > 0.7,
-            shininess: 150,
-            specular: 0xffffff,
-          });
-
-          const shape = new THREE.Mesh(geometry, material);
-          shape.position.x = (Math.random() - 0.5) * 40;
-          shape.position.y = (Math.random() - 0.5) * 20;
-          shape.position.z = (Math.random() - 0.5) * 40;
-          shape.rotation.set(
-            Math.random() * Math.PI,
-            Math.random() * Math.PI,
-            Math.random() * Math.PI
-          );
-
-          shape.userData = {
-            speed: Math.random() * 0.02 + 0.01,
-            rotationSpeed: Math.random() * 0.02 + 0.01,
-            direction: new THREE.Vector3(
-              Math.random() - 0.5,
-              Math.random() - 0.5,
-              Math.random() - 0.5
-            ).normalize(),
-          };
-
-          shapes.push(shape);
-          scene.add(shape);
-        }
-
-        shapesRef.current = shapes;
+      mesh.rotation.set(
+        Math.random() * Math.PI,
+        Math.random() * Math.PI,
+        Math.random() * Math.PI
+      );
+      mesh.userData = {
+        driftX: (Math.random() - 0.5) * 0.012,
+        driftY: (Math.random() - 0.5) * 0.008,
+        spinX: Math.random() * 0.008 + 0.002,
+        spinY: Math.random() * 0.008 + 0.002,
+        offset: Math.random() * Math.PI * 2,
       };
 
-      // Animation loop
-      const animate = () => {
-        if (!rendererRef.current || !sceneRef.current || !cameraRef.current) {
-          return;
-        }
-
-        animationRef.current = requestAnimationFrame(animate);
-
-        shapesRef.current.forEach((shape) => {
-          shape.position.addScaledVector(
-            shape.userData.direction,
-            shape.userData.speed
-          );
-          shape.rotation.x += shape.userData.rotationSpeed;
-          shape.rotation.y += shape.userData.rotationSpeed;
-
-          if (Math.abs(shape.position.x) > 25) shape.userData.direction.x *= -1;
-          if (Math.abs(shape.position.y) > 15) shape.userData.direction.y *= -1;
-          if (Math.abs(shape.position.z) > 25) shape.userData.direction.z *= -1;
-        });
-
-        controlsRef.current?.update();
-        renderer.render(scene, camera);
-      };
-
-      createShapes();
-      animate();
-
-      // Handle resize
-      const handleResize = () => {
-        if (!cameraRef.current || !rendererRef.current) return;
-
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      };
-
-      window.addEventListener("resize", handleResize);
-
-      // Cleanup function
-      cleanup = () => {
-        window.removeEventListener("resize", handleResize);
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-
-        if (threeContainerRef.current && rendererRef.current?.domElement) {
-          threeContainerRef.current.removeChild(renderer.domElement);
-        }
-
-        shapesRef.current.forEach((shape) => {
-          if (shape && sceneRef.current) {
-            sceneRef.current.remove(shape);
-            if (shape.geometry) shape.geometry.dispose();
-            if (shape.material) shape.material.dispose();
-          }
-        });
-
-        if (rendererRef.current) {
-          renderer.dispose();
-        }
-
-        if (controlsRef.current) {
-          controls.dispose();
-        }
-      };
-    } catch (error) {
-      console.error("Three.js initialization error:", error);
-      setWebGLError(true);
+      group.add(mesh);
+      shapes.push(mesh);
     }
 
-    return cleanup;
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particleCount = 120;
+    const particlePositions = new Float32Array(particleCount * 3);
+    for (let index = 0; index < particleCount; index += 1) {
+      particlePositions[index * 3] = (Math.random() - 0.5) * 40;
+      particlePositions[index * 3 + 1] = (Math.random() - 0.5) * 18;
+      particlePositions[index * 3 + 2] = (Math.random() - 0.5) * 16;
+    }
+    particlesGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(particlePositions, 3)
+    );
+
+    const particlesMaterial = new THREE.PointsMaterial({
+      color: 0xbefcff,
+      size: 0.14,
+      transparent: true,
+      opacity: 0.9,
+    });
+    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particles);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 1);
+    scene.add(ambient);
+
+    const resize = () => {
+      const { clientWidth, clientHeight } = container;
+      if (!clientWidth || !clientHeight) return;
+
+      renderer.setSize(clientWidth, clientHeight, false);
+      camera.aspect = clientWidth / clientHeight;
+      camera.updateProjectionMatrix();
+    };
+
+    const animate = () => {
+      frameId = window.requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+      group.rotation.y += 0.0018;
+      group.rotation.x = Math.sin(elapsed * 0.15) * 0.08;
+      particles.rotation.y -= 0.0008;
+
+      shapes.forEach((shape, index) => {
+        shape.rotation.x += shape.userData.spinX;
+        shape.rotation.y += shape.userData.spinY;
+        shape.position.x += shape.userData.driftX;
+        shape.position.y += shape.userData.driftY;
+        shape.position.y += Math.sin(elapsed * 0.9 + shape.userData.offset) * 0.006;
+
+        if (Math.abs(shape.position.x) > 18) shape.userData.driftX *= -1;
+        if (Math.abs(shape.position.y) > 8) shape.userData.driftY *= -1;
+      });
+
+      renderer.render(scene, camera);
+    };
+
+    resize();
+    animate();
+    window.addEventListener("resize", resize);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      window.cancelAnimationFrame(frameId);
+
+      shapes.forEach((shape) => {
+        shape.material.dispose();
+      });
+
+      particlesGeometry.dispose();
+      particlesMaterial.dispose();
+      geometryPool.forEach((geometry) => geometry.dispose());
+      renderer.dispose();
+
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
+    };
   }, []);
 
   return (
-    <footer className="relative bg-gradient-to-br from-gray-900/10 to-gray-800/90 text-white md:py-10 overflow-hidden">
-      {/* Three.js background with fallback */}
-      {webGLError ? (
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 z-0" />
-      ) : (
+    <footer className="relative overflow-hidden border-t border-white/10 bg-[#08111f] text-white">
+      {webglEnabled && (
         <div
-          ref={threeContainerRef}
-          className="absolute inset-0 z-0 opacity-70"
+          ref={backgroundRef}
+          className="absolute inset-0 z-0 opacity-90 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.92),rgba(0,0,0,0.82))]"
+          aria-hidden="true"
         />
       )}
+      <div className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.2),_transparent_26%),radial-gradient(circle_at_85%_15%,_rgba(249,115,22,0.16),_transparent_22%),linear-gradient(180deg,_rgba(8,17,31,0.68),_rgba(5,10,18,0.84))]" />
+      <div className="absolute inset-x-0 top-0 z-[2] h-px bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent" />
+      <div className="absolute left-10 top-12 z-[1] h-40 w-40 rounded-full bg-cyan-400/12 blur-3xl" />
+      <div className="absolute bottom-10 right-10 z-[1] h-40 w-40 rounded-full bg-orange-400/12 blur-3xl" />
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-gray-900/20 to-transparent z-1" />
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 md:px-8 lg:px-10">
+        <motion.div
+          {...fadeUp}
+          className="mb-12 flex flex-col gap-6 rounded-[28px] border border-white/10 bg-white/5 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.28)] backdrop-blur-xl md:flex-row md:items-end md:justify-between md:p-8"
+        >
+          <div className="max-w-2xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-sm font-medium text-cyan-200">
+              <Sparkles className="h-4 w-4" />
+              Available for freelance and full-time roles
+            </div>
+            <h2 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">
+              Let&apos;s build a polished digital experience together.
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-7 text-slate-300 md:text-lg">
+              Full-stack developer focused on fast, modern interfaces with
+              thoughtful interaction design and reliable engineering.
+            </p>
+          </div>
 
-      <div className="container mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:p-0 p-10 gap-10 md:gap-25 mb-10">
-          {/* About Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, type: "spring" }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="space-y-2"
+          <a
+            href="mailto:prakashmanig000@gmail.com"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition duration-300 hover:-translate-y-0.5 hover:bg-cyan-200"
           >
-            <motion.h3
-              className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500"
-              whileHover={{ scale: 1.02 }}
-            >
+            Start a conversation
+            <ArrowUpRight className="h-4 w-4" />
+          </a>
+        </motion.div>
+
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr_1fr]">
+          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }}>
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-cyan-300">
               About Me
-            </motion.h3>
-            <motion.p
-              className="text-gray-300 text-lg"
-              whileHover={{ x: 5 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              Full-stack developer specializing in modern web technologies with
-              a passion for interactive experiences.
-            </motion.p>
-            <div className="flex space-x-4">
-              {socialLinks.map((link, index) => (
-                <MotionNavLink
-                  key={index}
-                  to={link.url}
+            </p>
+            <p className="mt-4 max-w-md text-lg leading-8 text-slate-300">
+              Building responsive, high-performance products with modern web
+              technologies and a strong eye for UI detail.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              {socialLinks.map(({ name, href, icon: Icon }) => (
+                <a
+                  key={name}
+                  href={href}
                   target="_blank"
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  whileHover={{
-                    y: -5,
-                    scale: 1.2,
-                    boxShadow: "0 5px 15px rgba(59, 130, 246, 0.5)",
-                  }}
-                  whileTap={{ scale: 0.9 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 10,
-                    delay: index * 0.1,
-                  }}
-                  viewport={{ once: true }}
-                  className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all backdrop-blur-sm"
-                  aria-label={link.name}
+                  rel="noreferrer"
+                  aria-label={name}
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-200 transition duration-300 hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-cyan-300/10 hover:text-cyan-100"
                 >
-                  {link.icon}
-                </MotionNavLink>
+                  <Icon className="h-5 w-5" />
+                </a>
               ))}
             </div>
           </motion.div>
 
-          {/* Quick Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, type: "spring" }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="space-y-6"
-          >
-            <motion.h3
-              className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500"
-              whileHover={{ scale: 1.02 }}
-            >
+          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-fuchsia-300">
               Quick Links
-            </motion.h3>
-            <ul className="space-y-3 grid md:grid-cols-1 grid-cols-2">
-              {quickLinks.map((link, index) => (
-                <motion.li
-                  key={index}
-                  initial={{ x: -20, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  transition={{
-                    delay: 0.1 + index * 0.05,
-                    type: "spring",
-                    stiffness: 300,
-                  }}
-                  viewport={{ once: true }}
-                  whileHover={{ x: 10 }}
-                >
+            </p>
+            <ul className="mt-5 space-y-3">
+              {quickLinks.map((link) => (
+                <li key={link.name}>
                   <NavLink
-                    to={link.url}
-                    className="text-gray-300 hover:text-white transition-colors flex items-center gap-3 text-lg"
+                    to={link.to}
+                    className="group inline-flex items-center gap-3 text-base text-slate-300 transition duration-300 hover:text-white"
                   >
-                    <motion.span
-                      className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
-                      whileHover={{ scale: 1.5 }}
-                    />
-                    {link.name}
-                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-fuchsia-400 to-orange-300 transition duration-300 group-hover:scale-125" />
+                    <span>{link.name}</span>
+                    <ArrowUpRight className="h-4 w-4 -translate-x-1 opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
                   </NavLink>
-                </motion.li>
+                </li>
               ))}
             </ul>
           </motion.div>
 
-          {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="space-y-6"
-          >
-            <motion.h3
-              className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500"
-              whileHover={{ scale: 1.02 }}
-            >
+          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }}>
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-orange-300">
               Contact
-            </motion.h3>
-            <ul className="space-y-4">
-              {contactInfo.map((item, index) => (
-                <motion.li
-                  key={index}
-                  initial={{ x: -20, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 + index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="flex items-start gap-4 text-gray-300 text-lg"
-                  whileHover={{ x: 5 }}
+            </p>
+            <div className="mt-5 space-y-4">
+              {contactInfo.map(({ label, value, href, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={label === "Location" ? "_blank" : undefined}
+                  rel={label === "Location" ? "noreferrer" : undefined}
+                  className="flex items-start gap-4 rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition duration-300 hover:border-white/15 hover:bg-white/[0.06]"
                 >
-                  <motion.span className="mt-1" whileHover={{ scale: 1.2 }}>
-                    {item.icon}
-                  </motion.span>
-                  <span>{item.text}</span>
-                </motion.li>
+                  <span className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/8 text-cyan-200">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="block min-w-0">
+                    <span className="block text-xs uppercase tracking-[0.24em] text-slate-500">
+                      {label}
+                    </span>
+                    <span className="mt-1 block break-words text-sm leading-6 text-slate-200 md:text-base">
+                      {value}
+                    </span>
+                  </span>
+                </a>
               ))}
-            </ul>
-          </motion.div>
-
-          {/* 3D Art Gallery Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, type: "spring" }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="space-y-6"
-          >
-            <motion.h3
-              className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-500"
-              whileHover={{ scale: 1.02 }}
-            >
-              3D Art Gallery
-            </motion.h3>
-
-            <motion.div
-              className="relative h-48 rounded-xl overflow-hidden border border-white/20 group"
-              whileHover={{ scale: 1.02 }}
-              ref={modelViewerRef}
-            >
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ delay: 0.4 }}
-                  viewport={{ once: true }}
-                  className="mb-4"
-                >
-                  <Box className="w-12 h-12 text-violet-400" />
-                </motion.div>
-                <motion.p
-                  className="text-white/80 text-lg font-medium"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  viewport={{ once: true }}
-                >
-                  {webGLError
-                    ? "WebGL not supported in your browser"
-                    : "Interactive 3D models coming soon!"}
-                </motion.p>
-                <motion.p
-                  className="text-sm text-violet-300 mt-2"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                  viewport={{ once: true }}
-                >
-                  (Powered by Three.js)
-                </motion.p>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-600/20 group-hover:opacity-80 transition-opacity" />
-            </motion.div>
+            </div>
           </motion.div>
         </div>
 
-        {/* Divider */}
         <motion.div
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          transition={{ duration: 1, ease: "circOut" }}
-          viewport={{ once: true }}
-          className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent my-12"
-        />
-
-        {/* Copyright */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="flex flex-col md:flex-row justify-between items-center gap-6 text-gray-400 text-lg"
+          {...fadeUp}
+          transition={{ ...fadeUp.transition, delay: 0.2 }}
+          className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-slate-400 md:flex-row md:items-center md:justify-between"
         >
-          <motion.div
-            className="flex items-center gap-2"
-            whileHover={{ scale: 1.05 }}
-          >
-            <CodeIcon className="w-6 h-6" />
-            <span>&copy; {currentYear} All Rights Reserved</span>
-          </motion.div>
-
-          <motion.div
-            className="flex items-center justify-between gap-2"
-            whileHover={{ scale: 1.05 }}
-          >
-            <span>Made with</span>
-            <motion.span
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-            >
-              <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
-            </motion.span>
-            <span>by Prakash Mani</span>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.05 }}>
-            <span>v1.0.0</span>
-          </motion.div>
+          <p>&copy; {currentYear} Prakash Mani. All rights reserved.</p>
+          <p className="flex items-center gap-2">
+            Crafted with
+            <Heart className="h-4 w-4 fill-rose-500 text-rose-500" />
+            for clean code and better user experiences.
+          </p>
+          <p>v1.0.0</p>
         </motion.div>
       </div>
-
-      {/* Floating particles */}
-      {!webGLError && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          {[...Array(30)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-white/20"
-              style={{
-                width: `${Math.random() * 8 + 2}px`,
-                height: `${Math.random() * 8 + 2}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, Math.random() * 100 - 50],
-                x: [0, Math.random() * 100 - 50],
-                opacity: [0.3, 0.9, 0.3],
-              }}
-              transition={{
-                duration: Math.random() * 20 + 10,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            />
-          ))}
-        </div>
-      )}
     </footer>
   );
-};
+}
 
-export default AnimatedFooter;
+export default Footer;

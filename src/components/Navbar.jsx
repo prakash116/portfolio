@@ -1,14 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
-import { Menu, X, Home, User, Mail, Sparkles } from 'lucide-react';
+import { Menu, X, Home, User, Mail, Sparkles, Code2, LayoutTemplate } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Stars } from '@react-three/drei';
-import { Code2, LayoutTemplate } from 'lucide-react';
-import * as THREE from 'three';
 import { FaServicestack } from "react-icons/fa";
 
-// Enhanced Three.js Animated Logo Component
 const AnimatedLogo = () => {
   const meshRef = useRef();
   const groupRef = useRef();
@@ -18,7 +14,6 @@ const AnimatedLogo = () => {
       meshRef.current.rotation.x += 0.005;
       meshRef.current.rotation.y += 0.01;
     }
-    
     if (groupRef.current) {
       groupRef.current.rotation.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.2;
       groupRef.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.8) * 0.3;
@@ -29,9 +24,9 @@ const AnimatedLogo = () => {
     <group ref={groupRef}>
       <mesh ref={meshRef}>
         <icosahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial 
-          color="#3b82f6" 
-          emissive="#3b82f6" 
+        <meshStandardMaterial
+          color="#3b82f6"
+          emissive="#3b82f6"
           emissiveIntensity={0.8}
           roughness={0.2}
           metalness={0.7}
@@ -42,50 +37,12 @@ const AnimatedLogo = () => {
   );
 };
 
-// Cosmic Background Component
-const CosmicBackground = () => {
-  const groupRef = useRef();
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += 0.0005;
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {/* Main starfield */}
-      <Stars
-        radius={100}
-        depth={50}
-        count={2000}
-        factor={4}
-        saturation={0}
-        fade
-        speed={0.5}
-      />
-      
-      {/* Nebula effect */}
-      <mesh position={[10, 5, -50]}>
-        <sphereGeometry args={[20, 32, 32]} />
-        <meshBasicMaterial 
-          color={new THREE.Color(0x4a00e0)} 
-          transparent 
-          opacity={0.1} 
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-    </group>
-  );
-};
-
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen]   = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navbarRef = useRef(null);
-  const canvasRef = useRef(null);
 
-  // Handle resize for mobile detection
   useEffect(() => {
     const checkMobile = () => window.innerWidth <= 768;
     setIsMobile(checkMobile());
@@ -94,241 +51,250 @@ const Navbar = () => {
       setIsMobile(checkMobile());
       if (!checkMobile()) setIsOpen(false);
     };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
-  // Close menu when clicking outside on mobile
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isMobile && isOpen && navbarRef.current && !navbarRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      if (isMobile && isOpen && navbarRef.current && !navbarRef.current.contains(e.target))
         setIsOpen(false);
-      }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMobile, isOpen]);
 
   const navItems = [
-    { name: 'Home', path: 'home', icon: <Home size={18} /> },
-    { name: 'About Me', path: 'about', icon: <User size={18} /> },
-    { name: 'Projects', path: 'project', icon: <LayoutTemplate size={18} /> },
-    { name: 'Skills', path: 'skill', icon: <Code2 size={18} /> },
-    { name: 'Services', path: 'services', icon: <FaServicestack size={18} /> }, 
-    { name: 'Contact', path: 'contact', icon: <Mail size={18} /> },
+    { name: 'Home',     path: 'home',     icon: <Home size={15} /> },
+    { name: 'About Me', path: 'about',    icon: <User size={15} /> },
+    { name: 'Projects', path: 'project',  icon: <LayoutTemplate size={15} /> },
+    { name: 'Skills',   path: 'skill',    icon: <Code2 size={15} /> },
+    { name: 'Services', path: 'services', icon: <FaServicestack size={15} /> },
   ];
 
-  const itemVariants = {
-    open: {
-      opacity: 1,
-      y: 0,
-      transition: { type: 'spring', stiffness: 300, damping: 24 }
-    },
-    closed: { opacity: 0, y: 20, transition: { duration: 0.2 } }
-  };
-
-  const menuVariants = {
-    open: {
-      height: 'auto',
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        bounce: 0,
-        duration: 0.7,
-        delayChildren: 0.3,
-        staggerChildren: 0.05
-      }
-    },
-    closed: {
-      height: 0,
-      opacity: 0,
-      transition: {
-        type: 'spring',
-        bounce: 0,
-        duration: 0.3
-      }
-    }
-  };
-
-  const floatingVariants = {
-    float: {
-      y: [-5, 5],
-      transition: {
-        y: {
-          repeat: Infinity,
-          repeatType: 'reverse',
-          duration: 2,
-          ease: 'easeInOut'
-        }
-      }
-    }
-  };
-
   return (
-    <>
-      {/* Cosmic background canvas */}
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 1], fov: 75 }}>
-          <ambientLight intensity={0.5} />
-          <CosmicBackground />
-        </Canvas>
-      </div>
+    <header
+      ref={navbarRef}
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-[#0a0a14]/90 backdrop-blur-xl shadow-xl shadow-black/30 border-b border-white/[0.08]'
+          : 'bg-[#0a0a14]/50 backdrop-blur-md border-b border-white/[0.04]'
+      }`}
+    >
+      {/* Gradient glow line at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
 
-      {/* Navbar with glass morphism effect */}
-      <header 
-        ref={navbarRef}
-        className="fixed w-full p-4 bg-white/80 dark:bg-gray-900/40 text-gray-900 dark:text-white z-50 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-800/30"
-      >
-        <div className="flex justify-between h-10 mx-auto items-center max-w-7xl">
-          {/* Logo with Three.js animation */}
-          <NavLink 
-            to="/" 
-            aria-label="Back to homepage" 
-            className="flex items-center p-2"
+      <div className="flex items-center justify-between h-16 max-w-7xl mx-auto px-5 lg:px-8">
+
+        {/* ── Logo ── */}
+        <NavLink to="/" aria-label="Back to homepage" className="flex items-center gap-2.5 group flex-shrink-0">
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="relative w-9 h-9"
           >
+            <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-md group-hover:bg-blue-500/40 transition-colors duration-300" />
+            <Canvas camera={{ position: [0, 0, 5], fov: 25 }} className="w-full h-full relative z-10">
+              <ambientLight intensity={0.5} />
+              <pointLight position={[10, 10, 10]} intensity={1} />
+              <AnimatedLogo />
+            </Canvas>
             <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              variants={floatingVariants}
-              animate="float"
-              className="relative w-10 h-10"
-            >
-              <Canvas 
-                camera={{ position: [0, 0, 5], fov: 25 }} 
-                className="w-full h-full"
-                ref={canvasRef}
-              >
-                <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} intensity={1} />
-                <AnimatedLogo />
-                <OrbitControls enableZoom={false} enablePan={false} />
-              </Canvas>
-              <motion.div 
-                className="absolute inset-0 flex items-center justify-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Sparkles className="w-6 h-6 text-blue-500" />
-              </motion.div>
-            </motion.div>
-            <motion.span 
-              className="text-xl font-bold ml-2 hidden sm:inline-block bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              Prakash Mani
-            </motion.span>
-          </NavLink>
-
-          {/* Desktop Navigation */}
-          {!isMobile && (
-            <motion.ul 
-              className="items-stretch hidden space-x-3 md:flex"
+              className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              transition={{ delay: 0.5 }}
             >
-              {navItems.map((item, index) => (
-                <motion.li 
-                  key={item.name}
-                  className="flex"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <NavLink
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `flex items-center px-4 py-2 rounded-md transition-all ${
+              <Sparkles className="w-4 h-4 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="hidden sm:block"
+          >
+            <p className="text-base font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent leading-tight">
+              Prakash Mani
+            </p>
+            <p className="text-[9px] text-white/25 font-medium tracking-[0.2em] uppercase leading-none">
+              MERN Developer
+            </p>
+          </motion.div>
+        </NavLink>
+
+        {/* ── Desktop Nav ── */}
+        {!isMobile && (
+          <motion.nav
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="flex items-center gap-0.5"
+          >
+            {navItems.map((item, index) => (
+              <motion.div
+                key={item.name}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 + index * 0.05 }}
+              >
+                <NavLink to={item.path}>
+                  {({ isActive }) => (
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors duration-200 ${
                         isActive
-                          ? 'bg-blue-100/80 dark:bg-blue-900/80 text-blue-700 dark:text-blue-300 shadow-sm'
-                          : 'hover:bg-gray-100/50 dark:hover:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:shadow-sm'
-                      }`
-                    }
-                  >
-                    <span className="mr-2">{item.icon}</span>
-                    {item.name}
-                  </NavLink>
-                </motion.li>
-              ))}
-            </motion.ul>
+                          ? 'text-white bg-white/[0.07]'
+                          : 'text-white/45 hover:text-white/85 hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <span className={`transition-colors duration-200 ${isActive ? 'text-cyan-400' : ''}`}>
+                        {item.icon}
+                      </span>
+                      {item.name}
+                      {isActive && (
+                        <motion.span
+                          layoutId="navUnderline"
+                          className="absolute bottom-1 left-3 right-3 h-[2px] rounded-full bg-gradient-to-r from-cyan-400 to-blue-500"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </motion.div>
+                  )}
+                </NavLink>
+              </motion.div>
+            ))}
+          </motion.nav>
+        )}
+
+        {/* ── Right side ── */}
+        <div className="flex items-center gap-2">
+          {!isMobile && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <NavLink to="/contact">
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: '0 0 22px rgba(34,211,238,0.35)' }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold rounded-lg shadow-lg shadow-cyan-500/20"
+                >
+                  <Mail size={14} />
+                  Hire Me
+                </motion.button>
+              </NavLink>
+            </motion.div>
           )}
 
-          {/* Mobile menu button */}
+          {/* Mobile hamburger */}
           {isMobile && (
             <motion.button
-              className="flex justify-end p-2 md:hidden text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-800/50"
               onClick={() => setIsOpen(!isOpen)}
               whileTap={{ scale: 0.9 }}
+              className="relative p-2 text-white/55 hover:text-white rounded-lg hover:bg-white/[0.06] transition-colors"
               aria-label="Toggle menu"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
             >
-              {isOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
+              <AnimatePresence mode="wait" initial={false}>
+                {isOpen ? (
+                  <motion.span
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0,   opacity: 1 }}
+                    exit={{   rotate: 90,  opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="block"
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="open"
+                    initial={{ rotate: 90,  opacity: 0 }}
+                    animate={{ rotate: 0,   opacity: 1 }}
+                    exit={{   rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="block"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </motion.button>
           )}
         </div>
+      </div>
 
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobile && isOpen && (
-            <motion.div
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={menuVariants}
-              className="md:hidden bg-white/90 dark:bg-gray-800/90 overflow-hidden shadow-lg rounded-lg mt-2 backdrop-blur-md border border-gray-200/30 dark:border-gray-800/30"
-            >
-              <motion.ul className="px-4 space-y-2 pb-4">
-                {navItems.map((item, index) => (
-                  <motion.li
-                    key={item.name}
-                    variants={itemVariants}
-                    custom={index}
-                    initial="closed"
-                    animate="open"
-                    exit="closed"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+      {/* ── Mobile Menu ── */}
+      <AnimatePresence>
+        {isMobile && isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{   opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="overflow-hidden border-t border-white/[0.05] bg-[#0a0a14]/95 backdrop-blur-xl"
+          >
+            <div className="px-4 py-3 space-y-1">
+              {navItems.map((item, index) => (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.04 }}
+                >
+                  <NavLink
+                    to={item.path}
+                    onClick={() => setIsOpen(false)}
                   >
-                    <NavLink
-                      to={item.path}
-                      onClick={() => setIsOpen(false)}
-                      className={({ isActive }) =>
-                        `flex items-center px-4 py-3 rounded-md transition-all ${
-                          isActive
-                            ? 'bg-blue-100/80 dark:bg-blue-900/80 text-blue-700 dark:text-blue-300 shadow-sm'
-                            : 'hover:bg-gray-100/50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300'
-                        }`
-                      }
-                    >
-                      <motion.span 
-                        className="mr-3"
-                        whileHover={{ rotate: 15 }}
-                      >
-                        {item.icon}
-                      </motion.span>
-                      {item.name}
-                    </NavLink>
-                  </motion.li>
-                ))}
-              </motion.ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
-    </>
+                    {({ isActive }) => (
+                      <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                        isActive
+                          ? 'bg-blue-500/10 text-white border border-blue-500/20'
+                          : 'text-white/50 hover:text-white/85 hover:bg-white/[0.04]'
+                      }`}>
+                        <span className={isActive ? 'text-cyan-400' : 'text-white/30'}>{item.icon}</span>
+                        {item.name}
+                        {isActive && (
+                          <span className="ml-auto flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-1.5 w-1.5 rounded-full bg-cyan-400 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-500" />
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </NavLink>
+                </motion.div>
+              ))}
+
+              {/* Mobile Hire Me */}
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: navItems.length * 0.04 + 0.05 }}
+                className="pt-2 pb-1"
+              >
+                <NavLink to="/contact" onClick={() => setIsOpen(false)}>
+                  <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-cyan-500/20">
+                    <Mail size={15} />
+                    Hire Me
+                  </button>
+                </NavLink>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 };
 

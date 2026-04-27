@@ -1,40 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
-import { NavLink } from 'react-router-dom';
-import {
-  FaCode,
-  FaArrowRight,
-  FaArrowLeft,
-  FaGithub,
-  FaExternalLinkAlt,
-} from "react-icons/fa";
-import { SiMongodb, SiExpress, SiReact, SiNodedotjs, SiJavascript } from "react-icons/si";
+import { FaCode, FaArrowRight, FaArrowLeft, FaGithub, FaExternalLinkAlt, FaCheck, FaLightbulb } from "react-icons/fa";
+import { SiMongodb, SiExpress, SiReact, SiNodedotjs, SiJavascript, SiNextdotjs, SiTypescript } from "react-icons/si";
+import { TbBrandReactNative } from "react-icons/tb";
 
-// TECH_STACKS array remains the same as in your original code
 const TECH_STACKS = [
   {
     id: 1,
     name: "JavaScript",
-    icon: <SiJavascript size={40} />,
-    description:
-      "Versatile scripting language for web development, both client-side and server-side",
+    icon: <SiJavascript size={36} />,
+    description: "Versatile scripting language for web development — both client-side and server-side.",
     codeExample: `// Arrow function with array methods
 const numbers = [1, 2, 3, 4, 5];
 const squared = numbers.map(n => n * n);
 
 console.log(squared); // [1, 4, 9, 16, 25]`,
     proficiency: 95,
-    useCases: [
-      "Web interactivity",
-      "Server-side programming",
-      "Mobile app development",
-    ],
-    projectIdeas: [
-      "Interactive web games",
-      "Form validation scripts",
-      "Dynamic content loaders",
-    ],
+    useCases: ["Web interactivity", "Server-side programming", "Mobile app development"],
+    projectIdeas: ["Interactive web games", "Form validation scripts", "Dynamic content loaders"],
     color: "#F7DF1E",
     docsLink: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
     githubLink: "https://github.com/tc39/ecma262",
@@ -42,18 +26,16 @@ console.log(squared); // [1, 4, 9, 16, 25]`,
   {
     id: 2,
     name: "React",
-    icon: <SiReact size={40} />,
-    description:
-      "Declarative component-based UI library for building interactive interfaces",
+    icon: <SiReact size={36} />,
+    description: "Declarative component-based UI library for building interactive interfaces.",
     codeExample: `// Functional component with hooks
 import { useState } from 'react';
 
 function Counter() {
   const [count, setCount] = useState(0);
-
   return (
     <div>
-      <p>You clicked {count} times</p>
+      <p>Clicked {count} times</p>
       <button onClick={() => setCount(count + 1)}>
         Click me
       </button>
@@ -61,26 +43,17 @@ function Counter() {
   );
 }`,
     proficiency: 95,
-    useCases: [
-      "Single page apps",
-      "Interactive dashboards",
-      "Progressive web apps",
-    ],
-    projectIdeas: [
-      "Task management app",
-      "Real-time chat interface",
-      "Data visualization dashboard",
-    ],
+    useCases: ["Single page apps", "Interactive dashboards", "Progressive web apps"],
+    projectIdeas: ["Task management app", "Real-time chat interface", "Data visualisation dashboard"],
     color: "#61DAFB",
-    docsLink: "https://reactjs.org/docs/getting-started.html",
+    docsLink: "https://react.dev/",
     githubLink: "https://github.com/facebook/react",
   },
   {
     id: 3,
     name: "Node.js",
-    icon: <SiNodedotjs size={40} />,
-    description:
-      "JavaScript runtime built on Chrome's V8 engine for server-side applications",
+    icon: <SiNodedotjs size={36} />,
+    description: "JavaScript runtime built on Chrome's V8 engine for server-side applications.",
     codeExample: `// Read a file asynchronously
 const fs = require('fs').promises;
 
@@ -89,7 +62,7 @@ async function readFile() {
     const data = await fs.readFile('file.txt', 'utf8');
     console.log(data);
   } catch (err) {
-    console.error('Error reading file:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -97,556 +70,527 @@ readFile();`,
     proficiency: 90,
     useCases: ["Backend services", "CLI tools", "Web servers"],
     projectIdeas: ["API gateway", "Web scraper", "Automation scripts"],
-    color: "#339933",
+    color: "#68A063",
     docsLink: "https://nodejs.org/api/documentation.html",
     githubLink: "https://github.com/nodejs/node",
   },
   {
     id: 4,
     name: "Express.js",
-    icon: <SiExpress size={40} />,
-    description: "Fast, unopinionated web framework for Node.js",
+    icon: <SiExpress size={36} />,
+    description: "Fast, unopinionated web framework for Node.js — the standard for REST APIs.",
     codeExample: `// Basic Express server
 const express = require('express');
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.use(express.json());
+
+app.get('/api/users', async (req, res) => {
+  const users = await User.find();
+  res.json(users);
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
-});`,
+app.listen(3000, () =>
+  console.log('Server running on port 3000')
+);`,
     proficiency: 90,
     useCases: ["REST APIs", "Server-side rendering", "Middleware systems"],
-    projectIdeas: [
-      "Authentication service",
-      "File upload API",
-      "Payment gateway integration",
-    ],
-    color: "#000000",
+    projectIdeas: ["Authentication service", "File upload API", "Payment gateway integration"],
+    color: "#a0a0a0",
     docsLink: "https://expressjs.com/",
     githubLink: "https://github.com/expressjs/express",
   },
   {
     id: 5,
     name: "MongoDB",
-    icon: <SiMongodb size={40} />,
-    description:
-      "NoSQL document database with flexible schemas for modern applications",
-    codeExample: `// Create a new document
-db.users.insertOne({
-  name: "John Doe",
-  email: "john@example.com",
-  age: 30,
-  skills: ["JavaScript", "Node.js"]
-});`,
+    icon: <SiMongodb size={36} />,
+    description: "NoSQL document database with flexible schemas for modern applications.",
+    codeExample: `// Create & query documents
+await db.users.insertOne({
+  name: "Prakash Mani",
+  email: "p@example.com",
+  skills: ["React", "Node.js"],
+});
+
+const devs = await db.users
+  .find({ skills: "React" })
+  .sort({ name: 1 })
+  .toArray();`,
     proficiency: 85,
     useCases: ["User profiles", "Product catalogs", "Content management"],
-    projectIdeas: [
-      "Blog with user comments",
-      "E-commerce product database",
-      "Real-time analytics dashboard",
-    ],
+    projectIdeas: ["Blog with comments", "E-commerce database", "Real-time analytics"],
     color: "#4DB33D",
     docsLink: "https://docs.mongodb.com/",
     githubLink: "https://github.com/mongodb/mongo",
   },
+  {
+    id: 6,
+    name: "Next.js",
+    icon: <SiNextdotjs size={36} />,
+    description: "React framework for production — SSR, SSG, file-based routing, and API routes in one package.",
+    codeExample: `// App Router page with Server Component
+export default async function Page({ params }) {
+  const data = await fetch(
+    \`https://api.example.com/posts/\${params.id}\`,
+    { next: { revalidate: 60 } }
+  ).then(r => r.json());
 
+  return (
+    <article>
+      <h1>{data.title}</h1>
+      <p>{data.body}</p>
+    </article>
+  );
+}`,
+    proficiency: 88,
+    useCases: ["Server-side rendering", "Static site generation", "Full-stack apps"],
+    projectIdeas: ["Blog with MDX", "E-commerce storefront", "SaaS dashboard"],
+    color: "#ffffff",
+    docsLink: "https://nextjs.org/docs",
+    githubLink: "https://github.com/vercel/next.js",
+  },
+  {
+    id: 7,
+    name: "React Native",
+    icon: <TbBrandReactNative size={36} />,
+    description: "Build native iOS & Android apps using React — one codebase, truly native performance.",
+    codeExample: `// React Native screen with hooks
+import { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>{count}</Text>
+      <TouchableOpacity onPress={() => setCount(c => c + 1)}>
+        <Text style={styles.btn}>Tap me</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}`,
+    proficiency: 82,
+    useCases: ["Cross-platform mobile apps", "Native device APIs", "Offline-capable apps"],
+    projectIdeas: ["Food delivery app", "Fitness tracker", "Real-time chat app"],
+    color: "#61DAFB",
+    docsLink: "https://reactnative.dev/docs/getting-started",
+    githubLink: "https://github.com/facebook/react-native",
+  },
+  {
+    id: 8,
+    name: "TypeScript",
+    icon: <SiTypescript size={36} />,
+    description: "Typed superset of JavaScript that compiles to plain JS — catch bugs at compile time, not runtime.",
+    codeExample: `// Typed API response with generics
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message: string;
+}
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+async function fetchUser(id: number): Promise<ApiResponse<User>> {
+  const res = await fetch(\`/api/users/\${id}\`);
+  return res.json();
+}`,
+    proficiency: 85,
+    useCases: ["Large codebases", "Team collaboration", "Auto-completion & refactoring"],
+    projectIdeas: ["Type-safe REST client", "CLI tool", "Typed React component library"],
+    color: "#3178C6",
+    docsLink: "https://www.typescriptlang.org/docs/",
+    githubLink: "https://github.com/microsoft/TypeScript",
+  },
 ];
+
 const Carousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const [showCode, setShowCode] = useState(false);
-  const containerRef = useRef(null);
-  const sceneRef = useRef(null);
-  const rendererRef = useRef(null);
-  const timeoutRef = useRef(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const animationRef = useRef(null);
+  const [direction, setDirection]       = useState(1);
+  const [showCode, setShowCode]         = useState(false);
+  const containerRef  = useRef(null);
+  const rendererRef   = useRef(null);
+  const animationRef  = useRef(null);
+  const timeoutRef    = useRef(null);
 
-  // Check for mobile view
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Three.js background with floating tech icons - SINGLE INSTANCE
+  // Three.js floating shapes background
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Clean up previous renderer if it exists
-    if (rendererRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      containerRef.current.removeChild(rendererRef.current.domElement);
-      rendererRef.current.dispose();
-    }
+    const w = containerRef.current.clientWidth  || window.innerWidth;
+    const h = containerRef.current.clientHeight || window.innerHeight;
 
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      containerRef.current.clientWidth / containerRef.current.clientHeight,
-      0.1,
-      1000
-    );
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: true,
-      powerPreference: "high-performance",
-    });
+    const scene    = new THREE.Scene();
+    const camera   = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+    camera.position.z = 10;
 
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(
-      containerRef.current.clientWidth,
-      containerRef.current.clientHeight
-    );
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Create floating tech icons
-    const icons = [];
-    const geometries = [
-      new THREE.TorusGeometry(0.5, 0.2, 16, 32),
+    // Simpler geometry for perf
+    const geos = [
+      new THREE.TorusGeometry(0.5, 0.15, 8, 16),
       new THREE.BoxGeometry(0.8, 0.8, 0.8),
-      new THREE.SphereGeometry(0.6, 32, 32),
-      new THREE.ConeGeometry(0.6, 1, 32),
+      new THREE.SphereGeometry(0.5, 12, 12),
+      new THREE.OctahedronGeometry(0.6),
+      new THREE.ConeGeometry(0.5, 1, 12),
     ];
 
-    TECH_STACKS.forEach((tech, i) => {
-      const material = new THREE.MeshPhongMaterial({
+    const meshes = TECH_STACKS.map((tech, i) => {
+      const mat = new THREE.MeshPhongMaterial({
         color: new THREE.Color(tech.color),
-        emissive: new THREE.Color(tech.color).multiplyScalar(0.2),
-        specular: new THREE.Color(0x111111),
-        shininess: 30,
+        emissive: new THREE.Color(tech.color).multiplyScalar(0.5),
         transparent: true,
         opacity: 0.9,
       });
-
-      const icon = new THREE.Mesh(geometries[i], material);
-
-      // Position in a circular formation
+      const mesh = new THREE.Mesh(geos[i % geos.length], mat);
       const angle = (i / TECH_STACKS.length) * Math.PI * 2;
-      icon.position.x = Math.cos(angle) * 5;
-      icon.position.y = Math.sin(angle) * 3;
-      icon.position.z = (Math.random() - 0.5) * 10;
-
-      // Random velocity
-      icon.userData = {
-        velocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.02,
-          (Math.random() - 0.5) * 0.02,
-          (Math.random() - 0.5) * 0.02
-        ),
-        angle: 0,
-        rotationSpeed: (Math.random() - 0.5) * 0.02,
+      mesh.position.set(Math.cos(angle) * 5, Math.sin(angle) * 3, (Math.random() - 0.5) * 5);
+      mesh.userData = {
+        vx: (Math.random() - 0.5) * 0.012,
+        vy: (Math.random() - 0.5) * 0.012,
+        rs: (Math.random() - 0.5) * 0.012,
       };
-
-      scene.add(icon);
-      icons.push(icon);
+      scene.add(mesh);
+      return mesh;
     });
 
-    // Add lights
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-    scene.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
-
-    TECH_STACKS.forEach((tech, i) => {
-      const angle = (i / TECH_STACKS.length) * Math.PI * 2;
-      const light = new THREE.PointLight(tech.color, 1, 10);
-      light.position.set(Math.cos(angle) * 3, Math.sin(angle) * 2, 2);
-      scene.add(light);
-    });
-
-    camera.position.z = 10;
+    scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+    const dl = new THREE.DirectionalLight(0xffffff, 1.5);
+    dl.position.set(2, 2, 2);
+    scene.add(dl);
+    const dl2 = new THREE.DirectionalLight(0x88ccff, 0.8);
+    dl2.position.set(-2, -1, 1);
+    scene.add(dl2);
 
     const animate = () => {
       animationRef.current = requestAnimationFrame(animate);
-
-      icons.forEach((icon) => {
-        icon.position.add(icon.userData.velocity);
-
-        if (Math.abs(icon.position.x) > 8) icon.userData.velocity.x *= -1;
-        if (Math.abs(icon.position.y) > 5) icon.userData.velocity.y *= -1;
-        if (Math.abs(icon.position.z) > 10) icon.userData.velocity.z *= -1;
-
-        icon.userData.angle += icon.userData.rotationSpeed;
-        icon.rotation.x = icon.userData.angle;
-        icon.rotation.y = icon.userData.angle;
+      meshes.forEach(m => {
+        m.position.x += m.userData.vx;
+        m.position.y += m.userData.vy;
+        if (Math.abs(m.position.x) > 8) m.userData.vx *= -1;
+        if (Math.abs(m.position.y) > 5) m.userData.vy *= -1;
+        m.rotation.x += m.userData.rs;
+        m.rotation.y += m.userData.rs;
       });
-
-      const currentAngle = (currentIndex / TECH_STACKS.length) * Math.PI * 2;
-      const targetX = Math.cos(currentAngle) * 5;
-      const targetY = Math.sin(currentAngle) * 3;
-      camera.position.x += (targetX - camera.position.x) * 0.05;
-      camera.position.y += (targetY - camera.position.y) * 0.05;
-      camera.lookAt(0, 0, 0);
-
       renderer.render(scene, camera);
     };
     animate();
 
-    // Handle window resize
-    const handleResize = () => {
-      camera.aspect =
-        containerRef.current.clientWidth / containerRef.current.clientHeight;
+    const onResize = () => {
+      if (!containerRef.current) return;
+      const nw = containerRef.current.clientWidth;
+      const nh = containerRef.current.clientHeight;
+      camera.aspect = nw / nh;
       camera.updateProjectionMatrix();
-      renderer.setSize(
-        containerRef.current.clientWidth,
-        containerRef.current.clientHeight
-      );
+      renderer.setSize(nw, nh);
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(animationRef.current);
-      window.removeEventListener("resize", handleResize);
-      if (
-        rendererRef.current &&
-        containerRef.current &&
-        rendererRef.current.domElement
-      ) {
-        containerRef.current.removeChild(rendererRef.current.domElement);
-        rendererRef.current.dispose();
+      window.removeEventListener("resize", onResize);
+      geos.forEach(g => g.dispose());
+      meshes.forEach(m => m.material.dispose());
+      if (containerRef.current?.contains(renderer.domElement)) {
+        containerRef.current.removeChild(renderer.domElement);
       }
+      renderer.dispose();
     };
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
 
-  // Update camera position when currentIndex changes
+  // Auto-rotate every 6s
   useEffect(() => {
-    if (!sceneRef.current) return;
-
-    // This effect will now just update the camera target based on currentIndex
-    // The actual animation happens in the main animation loop
-  }, [currentIndex]);
-
-  // Auto-rotate carousel
-  useEffect(() => {
-    const rotate = () => {
+    timeoutRef.current = setTimeout(() => {
       setDirection(1);
-      setCurrentIndex((prev) => (prev + 1) % TECH_STACKS.length);
-    };
-
-    timeoutRef.current = setTimeout(rotate, 8000);
+      setCurrentIndex(p => (p + 1) % TECH_STACKS.length);
+    }, 6000);
     return () => clearTimeout(timeoutRef.current);
   }, [currentIndex]);
 
-  // Navigation functions remain the same
-  const goToNext = () => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % TECH_STACKS.length);
-    resetTimer();
-  };
-
-  const goToPrev = () => {
-    setDirection(-1);
-    setCurrentIndex(
-      (prev) => (prev - 1 + TECH_STACKS.length) % TECH_STACKS.length
-    );
-    resetTimer();
-  };
-
-  const goToIndex = (index) => {
-    setDirection(index > currentIndex ? 1 : -1);
-    setCurrentIndex(index);
-    resetTimer();
-  };
-
-  const resetTimer = () => {
+  const goToNext = useCallback(() => {
     clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setDirection(1);
-      setCurrentIndex((prev) => (prev + 1) % TECH_STACKS.length);
-    }, 8000);
-  };
+    setDirection(1);
+    setCurrentIndex(p => (p + 1) % TECH_STACKS.length);
+  }, []);
 
-  // Responsive animation variants
+  const goToPrev = useCallback(() => {
+    clearTimeout(timeoutRef.current);
+    setDirection(-1);
+    setCurrentIndex(p => (p - 1 + TECH_STACKS.length) % TECH_STACKS.length);
+  }, []);
+
+  const goToIndex = useCallback((idx) => {
+    clearTimeout(timeoutRef.current);
+    setDirection(idx > currentIndex ? 1 : -1);
+    setCurrentIndex(idx);
+  }, [currentIndex]);
+
   const variants = {
-    enter: (direction) => ({
-      x: direction > 0 ? (isMobile ? 300 : 500) : isMobile ? -300 : -500,
-      opacity: 0,
-      scale: 0.9,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        scale: { duration: 0.2 },
-      },
-    },
-    exit: (direction) => ({
-      x: direction < 0 ? (isMobile ? 300 : 500) : isMobile ? -300 : -500,
-      opacity: 0,
-      scale: 0.9,
-    }),
+    enter:  (d) => ({ x: d > 0 ? 380 : -380, opacity: 0, scale: 0.96 }),
+    center: { x: 0, opacity: 1, scale: 1, transition: { type: "spring", stiffness: 280, damping: 28 } },
+    exit:   (d) => ({ x: d < 0 ? 380 : -380, opacity: 0, scale: 0.96 }),
   };
 
-  const currentTech = TECH_STACKS[currentIndex];
+  const tech = TECH_STACKS[currentIndex];
 
   return (
-    <div className="relative w-full overflow-hidden bg-gray-900 text-white">
-      {/* Three.js background container */}
-      <div ref={containerRef} className="absolute inset-0 z-0 opacity-20" />
+    <section className="relative w-full overflow-hidden bg-gradient-to-b from-[#0d0d1a] to-[#080810] py-16 px-4 md:px-8">
+      {/* Three.js bg */}
+      <div ref={containerRef} className="absolute inset-0 z-0 opacity-40" />
+      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0d0d1a]/10 via-transparent to-[#080810]/60" />
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 z-1 bg-gradient-to-b from-gray-900/20 to-gray-900/30" />
+      <div className="relative z-10 max-w-6xl mx-auto">
 
-      <div className="relative z-10 flex flex-col items-center justify-start pt-16 px-4 pb-5 md:pb-8"> {/* Added pb-20 for mobile and md:pb-8 for desktop */}
-        <div className="w-full max-w-6xl mx-auto relative">
-          {/* Main carousel content */}
-          <div className="relative w-full h-auto min-h-[400px] md:min-h-[500px]">
-            <AnimatePresence custom={direction} initial={false}>
-              <motion.div
-                key={currentIndex}
-                custom={direction}
-                variants={variants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="absolute inset-0 flex flex-col md:flex-row bg-gray-800/90 backdrop-blur-sm rounded-xl overflow-hidden shadow-2xl border border-gray-700/50"
-              >
-                {/* Navigation arrows - more responsive positioning */}
-                <button
-                  onClick={goToPrev}
-                  className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-2 md:p-3 rounded-full bg-gray-900/80 hover:bg-gray-700 transition-all shadow-lg z-20"
-                  aria-label="Previous"
-                >
-                  <FaArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-                </button>
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="text-center mb-10"
+        >
+          <span className="inline-block px-3 py-1 text-xs font-bold tracking-[0.2em] uppercase text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 rounded-full mb-3">
+            Expertise
+          </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white">My Tech Arsenal</h2>
+          <p className="text-white/35 text-base mt-1.5">Technologies I build production apps with</p>
+        </motion.div>
 
-                <button
-                  onClick={goToNext}
-                  className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-2 md:p-3 rounded-full bg-gray-900/80 hover:bg-gray-700 transition-all shadow-lg z-20"
-                  aria-label="Next"
-                >
-                  <FaArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-                </button>
+        {/* Carousel */}
+        <div className="relative min-h-[440px] md:min-h-[460px]">
+          <AnimatePresence custom={direction} initial={false}>
+            <motion.div
+              key={currentIndex}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="absolute inset-0 flex flex-col md:flex-row rounded-2xl overflow-hidden backdrop-blur-sm"
+              style={{
+                background: `linear-gradient(135deg, rgba(13,13,26,0.92) 0%, rgba(10,10,20,0.95) 100%)`,
+                border: `1px solid ${tech.color}28`,
+                boxShadow: `0 0 50px ${tech.color}12, inset 0 1px 0 rgba(255,255,255,0.04)`,
+              }}
+            >
+              {/* ── Left panel ── */}
+              <div className="flex-1 p-6 md:p-8 flex flex-col min-w-0">
 
-                {/* Toggle code button */}
-                <button
-                  onClick={() => setShowCode(!showCode)}
-                  className={`absolute top-4 right-4 p-2 md:p-3 rounded-full transition-all shadow-lg z-20 flex items-center ${
-                    showCode
-                      ? "bg-purple-600 hover:bg-purple-700"
-                      : "bg-gray-900/80 hover:bg-gray-700"
-                  }`}
-                  aria-label="Toggle Code"
-                >
-                  <FaCode className="w-4 h-4 md:w-5 md:h-5" />
-                </button>
-
-                {/* Tech info panel */}
-                <div className="flex-1 p-4 md:p-6 flex flex-col">
-                  <div className="flex items-center mb-3 md:mb-4">
-                    <motion.div
-                      className="text-3xl md:text-4xl mr-3"
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 20,
-                        ease: "linear",
-                      }}
-                    >
-                      {currentTech.icon}
-                    </motion.div>
-                    <motion.h2
-                      className="text-2xl md:text-3xl font-bold"
-                      style={{ color: currentTech.color }}
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      {currentTech.name}
-                    </motion.h2>
+                {/* Icon + name */}
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="relative flex-shrink-0">
+                    <div className="absolute inset-0 rounded-2xl blur-xl opacity-50"
+                      style={{ backgroundColor: tech.color }} />
+                    <div className="relative w-14 h-14 rounded-2xl flex items-center justify-center"
+                      style={{ background: `${tech.color}18`, border: `1px solid ${tech.color}35` }}>
+                      <span style={{ color: tech.color }}>{tech.icon}</span>
+                    </div>
                   </div>
-
-                  <motion.p
-                    className="text-gray-300 text-sm md:text-base mb-4 md:mb-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    {currentTech.description}
-                  </motion.p>
-
-                  {/* Proficiency meter */}
-                  <motion.div
-                    className="mb-4 md:mb-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                  >
-                    <div className="flex justify-between mb-1 text-sm md:text-base">
-                      <span>Proficiency</span>
-                      <span>{currentTech.proficiency}%</span>
-                    </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2 md:h-2.5 overflow-hidden">
-                      <motion.div
-                        className="h-full rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${currentTech.proficiency}%` }}
-                        transition={{ delay: 0.8, duration: 1 }}
-                        style={{ backgroundColor: currentTech.color }}
-                      />
-                    </div>
-                  </motion.div>
-
-                  {/* Use cases */}
-                  <motion.div
-                    className="mb-4 md:mb-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
-                  >
-                    <h3 className="text-base md:text-lg font-semibold mb-2">
-                      Common Use Cases
-                    </h3>
-                    <ul className="list-disc list-inside text-gray-300 text-sm md:text-base space-y-1">
-                      {currentTech.useCases.map((useCase, i) => (
-                        <motion.li
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 1.2 + i * 0.1 }}
-                        >
-                          {useCase}
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </motion.div>
-
-                  {/* Documentation links */}
-                  <motion.div
-                    className="mt-auto flex gap-3"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.5 }}
-                  >
-                    <NavLink
-                      to={currentTech.docsLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center text-sm px-3 py-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
-                    >
-                      <FaExternalLinkAlt className="mr-2" />
-                      Docs
-                    </NavLink>
-                    <a
-                      href={currentTech.githubLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center text-sm px-3 py-1.5 rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
-                    >
-                      <FaGithub className="mr-2" />
-                      GitHub
-                    </a>
-                  </motion.div>
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-white leading-none mb-0.5">
+                      {tech.name}
+                    </h2>
+                    <span className="text-xs font-bold tracking-widest uppercase"
+                      style={{ color: tech.color }}>
+                      Core Technology
+                    </span>
+                  </div>
                 </div>
 
-                {/* Dynamic right panel - better responsive behavior */}
-                <div
-                  className={`flex-1 bg-gray-900/50 p-4 md:p-6 overflow-auto ${
-                    isMobile ? "border-t" : "border-l"
-                  } border-gray-700/50`}
-                >
+                {/* Description */}
+                <p className="text-white/50 text-base leading-relaxed mb-5">{tech.description}</p>
+
+                {/* Proficiency bar */}
+                <div className="mb-5">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-semibold text-white/35 uppercase tracking-widest">Proficiency</span>
+                    <span className="text-base font-bold text-white">{tech.proficiency}%</span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${tech.proficiency}%` }}
+                      transition={{ duration: 0.9, ease: "easeOut" }}
+                      style={{
+                        background: `linear-gradient(90deg, ${tech.color}70, ${tech.color})`,
+                        boxShadow: `0 0 10px ${tech.color}60`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Use cases */}
+                <div className="mb-auto">
+                  <h3 className="text-xs font-semibold text-white/30 uppercase tracking-widest mb-2.5">
+                    Use Cases
+                  </h3>
+                  <ul className="space-y-2">
+                    {tech.useCases.map((uc, i) => (
+                      <motion.li
+                        key={i}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 + i * 0.07 }}
+                        className="flex items-center gap-2.5 text-base text-white/60"
+                      >
+                        <FaCheck className="w-3 h-3 flex-shrink-0" style={{ color: tech.color }} />
+                        {uc}
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex flex-wrap items-center gap-2 mt-5 pt-5 border-t border-white/[0.05]">
+                  <a href={tech.docsLink} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-white/55 hover:text-white border border-white/[0.07] transition-all font-medium">
+                    <FaExternalLinkAlt className="w-3 h-3" /> Docs
+                  </a>
+                  <a href={tech.githubLink} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-white/55 hover:text-white border border-white/[0.07] transition-all font-medium">
+                    <FaGithub className="w-3 h-3" /> GitHub
+                  </a>
+                  <motion.button
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setShowCode(p => !p)}
+                    className="ml-auto flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg border transition-all font-semibold"
+                    style={{
+                      background: showCode ? `${tech.color}18` : 'rgba(255,255,255,0.04)',
+                      borderColor: showCode ? `${tech.color}45` : 'rgba(255,255,255,0.07)',
+                      color: showCode ? tech.color : 'rgba(255,255,255,0.45)',
+                    }}
+                  >
+                    <FaCode className="w-3 h-3" />
+                    {showCode ? "Hide Code" : "View Code"}
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="hidden md:block w-px self-stretch my-5"
+                style={{ background: `linear-gradient(to bottom, transparent, ${tech.color}25, transparent)` }} />
+
+              {/* ── Right panel ── */}
+              <div className="flex-1 p-6 md:p-8 bg-black/15 min-w-0 overflow-auto">
+                <AnimatePresence mode="wait">
                   {showCode ? (
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5 }}
-                      className="h-full"
+                      key="code"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.18 }}
                     >
-                      <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
-                        Code Example
-                      </h3>
-                      <pre className="bg-gray-800 p-3 md:p-4 rounded-lg overflow-x-auto text-xs md:text-sm">
-                        <code className="text-gray-300 font-mono">
-                          {currentTech.codeExample}
-                        </code>
+                      {/* Fake browser chrome */}
+                      <div className="flex items-center gap-1.5 mb-3">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
+                        <span className="ml-2 text-xs text-white/20 font-mono">
+                          example.{tech.name.toLowerCase().replace(/[\s.]/g, "")}
+                        </span>
+                      </div>
+                      <pre className="rounded-xl p-4 overflow-x-auto text-sm font-mono leading-relaxed border border-white/[0.05]"
+                        style={{ background: 'rgba(5,5,15,0.7)' }}>
+                        <code className="text-emerald-300/80">{tech.codeExample}</code>
                       </pre>
                     </motion.div>
                   ) : (
                     <motion.div
-                      className="h-full flex flex-col items-center justify-center text-center p-4"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5 }}
+                      key="explore"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.18 }}
+                      className="h-full flex flex-col"
                     >
-                      <motion.div
-                        className="text-5xl md:text-6xl mb-4"
-                        style={{ color: currentTech.color }}
-                        animate={{
-                          scale: [1, 1.1, 1],
-                          rotate: [0, 5, -5, 0],
-                        }}
-                        transition={{
-                          repeat: Infinity,
-                          duration: 4,
-                          ease: "easeInOut",
-                        }}
-                      >
-                        {currentTech.icon}
-                      </motion.div>
-                      <h3 className="text-xl md:text-2xl font-bold mb-2">
-                        Explore {currentTech.name}
-                      </h3>
-                      <p className="text-gray-400 text-sm md:text-base max-w-md">
-                        Click the code button to see examples for{" "}
-                        {currentTech.name}
-                      </p>
-                      <div className="mt-6 grid grid-cols-2 gap-3 w-full max-w-xs">
-                        {currentTech.projectIdeas
-                          .slice(0, isMobile ? 2 : 4)
-                          .map((idea, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.5 + i * 0.2 }}
-                              className="p-3 bg-gray-800/50 rounded-lg text-xs md:text-sm"
-                            >
-                              {idea}
-                            </motion.div>
-                          ))}
+                      {/* Animated icon */}
+                      <div className="flex flex-col items-center pt-2 mb-5">
+                        <motion.div
+                          style={{ color: tech.color }}
+                          animate={{ scale: [1, 1.1, 1], rotate: [0, 4, -4, 0] }}
+                          transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+                          className="mb-2"
+                        >
+                          <span style={{ fontSize: 52 }}>{tech.icon}</span>
+                        </motion.div>
+                        <h3 className="text-lg font-bold text-white mb-0.5">Project Ideas</h3>
+                        <p className="text-xs text-white/30">Click "View Code" for code examples</p>
+                      </div>
+
+                      {/* Project idea cards */}
+                      <div className="space-y-2.5">
+                        {tech.projectIdeas.map((idea, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.07 }}
+                            className="flex items-center gap-3 p-3.5 rounded-xl border border-white/[0.05] hover:border-white/[0.12] transition-colors group cursor-default"
+                            style={{ background: 'rgba(255,255,255,0.025)' }}
+                          >
+                            <FaLightbulb className="w-3.5 h-3.5 flex-shrink-0 group-hover:scale-110 transition-transform"
+                              style={{ color: tech.color }} />
+                            <span className="text-base text-white/60 group-hover:text-white/85 transition-colors">{idea}</span>
+                          </motion.div>
+                        ))}
                       </div>
                     </motion.div>
                   )}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
-          {/* Indicators */}
-          <div className="flex justify-center gap-2 mt-6 mb-4 md:mb-0"> {/* Added mb-4 for mobile */}
-            {TECH_STACKS.map((tech, index) => (
-              <motion.button
-                key={tech.id}
-                onClick={() => goToIndex(index)}
-                className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all ${
-                  index === currentIndex
-                    ? "bg-white"
-                    : "bg-gray-600 hover:bg-gray-400"
-                }`}
-                aria-label={`Go to ${tech.name}`}
-                whileHover={{ scale: 1.5 }}
-                whileTap={{ scale: 0.8 }}
-              />
-            ))}
-          </div>
+          {/* Desktop nav arrows (outside card) */}
+          <button onClick={goToPrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 hidden md:flex w-10 h-10 rounded-full items-center justify-center text-white/40 hover:text-white border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.1] backdrop-blur-sm transition-all z-20">
+            <FaArrowLeft className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={goToNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 hidden md:flex w-10 h-10 rounded-full items-center justify-center text-white/40 hover:text-white border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.1] backdrop-blur-sm transition-all z-20">
+            <FaArrowRight className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Mobile nav arrows (inside card) */}
+          <button onClick={goToPrev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 flex md:hidden w-8 h-8 rounded-full items-center justify-center text-white/40 bg-black/40 border border-white/[0.07] z-20">
+            <FaArrowLeft className="w-3 h-3" />
+          </button>
+          <button onClick={goToNext}
+            className="absolute right-3 top-1/2 -translate-y-1/2 flex md:hidden w-8 h-8 rounded-full items-center justify-center text-white/40 bg-black/40 border border-white/[0.07] z-20">
+            <FaArrowRight className="w-3 h-3" />
+          </button>
+        </div>
+
+        {/* Pill indicators */}
+        <div className="flex justify-center items-center gap-2 mt-6">
+          {TECH_STACKS.map((t, i) => (
+            <motion.button
+              key={t.id}
+              onClick={() => goToIndex(i)}
+              aria-label={`Go to ${t.name}`}
+              whileHover={{ scale: 1.25 }}
+              whileTap={{ scale: 0.8 }}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === currentIndex ? 28 : 8,
+                height: 8,
+                backgroundColor: i === currentIndex ? tech.color : "rgba(255,255,255,0.18)",
+                boxShadow: i === currentIndex ? `0 0 10px ${tech.color}70` : "none",
+              }}
+            />
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

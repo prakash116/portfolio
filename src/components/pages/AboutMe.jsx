@@ -1,688 +1,706 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  GraduationCap,
-  Briefcase,
-  Code2,
-  Cpu,
-  Rocket,
-  Database,
-  Server,
-  Cloud,
-  Layers,
-  CpuIcon,
-  Terminal,
-  Palette,
-  ServerCog,
+  GraduationCap, Briefcase, Code2, Rocket, Database, Server,
+  Layers, CpuIcon, Terminal, Palette, Sparkles, Zap, Smartphone, Shield, RefreshCw,
 } from "lucide-react";
 import { IoLogoJavascript } from "react-icons/io";
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import { SiTypescript, SiNextdotjs, SiRedux, SiGit, SiReact, SiSocketdotio } from "react-icons/si";
+import { TbBrandReactNative } from "react-icons/tb";
+import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 import ProfileCard from "../MyInfo";
 
+// ── Static data outside component — no re-creation on render ─────────────────
+
+const EDUCATION = [
+  {
+    degree: "Bachelor of Technology – Computer Science",
+    institution: "SR Institute of Management & Technology",
+    location: "Lucknow, Uttar Pradesh",
+    year: "2020 – 2024",
+    type: "B.Tech Degree",
+    status: "Graduated",
+    description: "Specialized in Web Technologies, Cloud Computing, and Database Management Systems with a focus on practical software engineering.",
+    tags: ["Data Structures", "Web Technologies", "Cloud Computing", "DBMS", "OOP"],
+    icon: <GraduationCap className="w-5 h-5 text-cyan-400" />,
+    color: "text-cyan-400",
+    bg: "bg-cyan-500/10",
+    border: "border-cyan-500/20",
+    topBar: "linear-gradient(to right, #22d3ee, #3b82f6)",
+    statusColor: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
+  },
+  {
+    degree: "Master's in Full-Stack Web Development",
+    institution: "DUCAT – Pitampura",
+    location: "Pitampura, New Delhi",
+    year: "2024 – 2025",
+    type: "Professional Training",
+    status: "Certified",
+    description: "Intensive full-stack training covering the MERN stack, system design, REST APIs, and building production-ready applications.",
+    tags: ["React.js", "Node.js", "MongoDB", "Express.js", "REST APIs"],
+    icon: <Layers className="w-5 h-5 text-violet-400" />,
+    color: "text-violet-400",
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/20",
+    topBar: "linear-gradient(to right, #a855f7, #6366f1)",
+    statusColor: "text-violet-400 bg-violet-500/10 border-violet-500/30",
+  },
+];
+
+const EXPERIENCE = [
+  {
+    role: "Software Developer",
+    company: "Restro Edge Pvt. Ltd.",
+    location: "Kohat Enclave, Delhi",
+    duration: "July 2025 – Present",
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
+    dotColor: "bg-emerald-400",
+    icon: <Terminal className="w-4 h-4 text-emerald-400" />,
+    responsibilities: [
+      "Developed and deployed a cross-platform mobile application using React Native for restaurant service management.",
+      "Designed and integrated RESTful APIs for seamless frontend–backend communication.",
+      "Implemented secure authentication and role-based access control using JWT and cookies.",
+      "Collaborated with cross-functional teams to deliver scalable and production-ready solutions.",
+      "Optimized application performance and reduced load time through efficient component design and lazy loading.",
+    ],
+  },
+  {
+    role: "Web Developer & UI/UX Designer",
+    company: "Dobby Virtual Mall Pvt. Ltd.",
+    location: "Delhi (Freelance)",
+    duration: "Jan 2025 – June 2025",
+    color: "text-pink-400",
+    bg: "bg-pink-500/10",
+    border: "border-pink-500/20",
+    dotColor: "bg-pink-400",
+    icon: <Palette className="w-4 h-4 text-pink-400" />,
+    responsibilities: [
+      "Developed responsive web applications using React.js with reusable component architecture.",
+      "Built and integrated features aligned with e-commerce and virtual mall workflows.",
+      "Optimized UI performance and improved user experience across devices.",
+    ],
+  },
+  {
+    role: "Web Developer",
+    company: "Zoko World",
+    location: "Preet Vihar, Delhi",
+    duration: "June 2024 – May 2025",
+    color: "text-cyan-400",
+    bg: "bg-cyan-500/10",
+    border: "border-cyan-500/20",
+    dotColor: "bg-cyan-400",
+    icon: <Code2 className="w-4 h-4 text-cyan-400" />,
+    responsibilities: [
+      "Developed scalable web applications using React.js and Next.js.",
+      "Improved UI performance and optimized overall user experience.",
+      "Followed clean architecture principles and reusable component design.",
+    ],
+  },
+  {
+    role: "Web Developer",
+    company: "Passage Consultants",
+    location: "Janakpuri, New Delhi",
+    duration: "April 2023 – May 2024",
+    color: "text-violet-400",
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/20",
+    dotColor: "bg-violet-400",
+    icon: <Layers className="w-4 h-4 text-violet-400" />,
+    responsibilities: [
+      "Independently developed a responsive and user-friendly website using React.js.",
+      "Designed clean, modern UI to enhance client engagement and user experience.",
+      "Optimized performance and ensured smooth functionality across all devices.",
+    ],
+  },
+  {
+    role: "IT Executive",
+    company: "Elite India Elevator",
+    location: "Azadpur, Delhi",
+    duration: "May 2022 – April 2023",
+    color: "text-orange-400",
+    bg: "bg-orange-500/10",
+    border: "border-orange-500/20",
+    dotColor: "bg-orange-400",
+    icon: <CpuIcon className="w-4 h-4 text-orange-400" />,
+    responsibilities: [
+      "Managed IT operations, handled company website and Odoo software.",
+      "Prepared quotations, invoices, and AMC reports using Excel and Word.",
+      "Maintained data records and supported day-to-day IT operations.",
+    ],
+  },
+];
+
+const SKILLS = [
+  { name: "JavaScript",    level: 95, icon: <IoLogoJavascript     className="w-5 h-5 text-yellow-400"  />, gradient: "linear-gradient(90deg,#eab308,#f59e0b)" },
+  { name: "TypeScript",    level: 80, icon: <SiTypescript         className="w-5 h-5 text-blue-400"    />, gradient: "linear-gradient(90deg,#3b82f6,#2563eb)" },
+  { name: "React",         level: 95, icon: <SiReact              className="w-5 h-5 text-cyan-400"    />, gradient: "linear-gradient(90deg,#22d3ee,#06b6d4)" },
+  { name: "Next.js",       level: 82, icon: <SiNextdotjs          className="w-5 h-5 text-white"       />, gradient: "linear-gradient(90deg,#e2e8f0,#94a3b8)" },
+  { name: "React Native",  level: 80, icon: <TbBrandReactNative   className="w-5 h-5 text-sky-400"     />, gradient: "linear-gradient(90deg,#38bdf8,#0ea5e9)" },
+  { name: "Redux Toolkit", level: 85, icon: <SiRedux              className="w-5 h-5 text-purple-400"  />, gradient: "linear-gradient(90deg,#a855f7,#7c3aed)" },
+  { name: "Node.js",       level: 90, icon: <Server               className="w-5 h-5 text-green-400"  />, gradient: "linear-gradient(90deg,#4ade80,#22c55e)" },
+  { name: "Express.js",    level: 90, icon: <CpuIcon              className="w-5 h-5 text-violet-400" />, gradient: "linear-gradient(90deg,#a78bfa,#7c3aed)" },
+  { name: "MongoDB",       level: 85, icon: <Database             className="w-5 h-5 text-emerald-400"/>, gradient: "linear-gradient(90deg,#34d399,#10b981)" },
+  { name: "Git",           level: 88, icon: <SiGit                className="w-5 h-5 text-orange-400" />, gradient: "linear-gradient(90deg,#fb923c,#f97316)" },
+  { name: "WebSocket",     level: 78, icon: <Zap                  className="w-5 h-5 text-yellow-300"  />, gradient: "linear-gradient(90deg,#fde047,#facc15)" },
+  { name: "Socket.io",    level: 78, icon: <SiSocketdotio        className="w-5 h-5 text-white"       />, gradient: "linear-gradient(90deg,#e2e8f0,#94a3b8)" },
+  { name: "AI Agents",     level: 75, icon: <Sparkles             className="w-5 h-5 text-pink-400"   />, gradient: "linear-gradient(90deg,#f472b6,#ec4899)" },
+];
+
+const PHILOSOPHY_CARDS = [
+  {
+    icon: <Code2 className="w-5 h-5 text-cyan-400" />,
+    bg: "bg-cyan-500/10", border: "border-cyan-500/20", color: "text-cyan-400",
+    title: "Clean Code",
+    desc: "Every function has a purpose. I write readable, maintainable code that future-me won't hate.",
+  },
+  {
+    icon: <Zap className="w-5 h-5 text-yellow-400" />,
+    bg: "bg-yellow-500/10", border: "border-yellow-500/20", color: "text-yellow-400",
+    title: "Performance First",
+    desc: "Lazy loading, efficient queries, optimized bundles — speed is a feature, not an afterthought.",
+  },
+  {
+    icon: <Smartphone className="w-5 h-5 text-sky-400" />,
+    bg: "bg-sky-500/10", border: "border-sky-500/20", color: "text-sky-400",
+    title: "Cross-Platform",
+    desc: "One unified logic for web and mobile using React and React Native — less duplication, more reach.",
+  },
+  {
+    icon: <Shield className="w-5 h-5 text-emerald-400" />,
+    bg: "bg-emerald-500/10", border: "border-emerald-500/20", color: "text-emerald-400",
+    title: "Secure by Default",
+    desc: "JWT, role-based access, input validation — security is baked in from day one, not patched later.",
+  },
+  {
+    icon: <Server className="w-5 h-5 text-violet-400" />,
+    bg: "bg-violet-500/10", border: "border-violet-500/20", color: "text-violet-400",
+    title: "API-First Design",
+    desc: "Scalable REST APIs with clear contracts make frontends independent and integrations seamless.",
+  },
+  {
+    icon: <RefreshCw className="w-5 h-5 text-pink-400" />,
+    bg: "bg-pink-500/10", border: "border-pink-500/20", color: "text-pink-400",
+    title: "Always Evolving",
+    desc: "From MERN to AI Agents — I embrace new tools and stay ahead of the curve continuously.",
+  },
+];
+
+// ── Section header component ─────────────────────────────────────────────────
+const SectionHeader = ({ icon, title, gradient }) => (
+  <div className="flex items-center gap-4 mb-8">
+    <div className="w-11 h-11 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center flex-shrink-0">
+      {icon}
+    </div>
+    <div>
+      <h2 className="text-2xl md:text-3xl font-extrabold text-white">{title}</h2>
+      <div className="h-0.5 mt-1.5 w-14 rounded-full" style={{ background: gradient }} />
+    </div>
+  </div>
+);
+
+// ── Main component ────────────────────────────────────────────────────────────
 const AboutPage = () => {
-  const containerRef = useRef(null);
   const mountRef = useRef(null);
-  const [webGLError, setWebGLError] = useState(false);
+  const [webGLOk, setWebGLOk] = useState(true);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  // Parallax effects
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -50]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.3], [1, 1, 0]);
-
-  // Check WebGL support
-  const isWebGLAvailable = useCallback(() => {
-    try {
-      const canvas = document.createElement('canvas');
-      return !!(
-        window.WebGLRenderingContext &&
-        (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-      );
-    } catch (e) {
-      return false;
-    }
-  }, []);
-
-  // Handle resize function
-  const handleResize = useCallback((camera, renderer) => {
-    if (!camera || !renderer) return;
-    
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  }, []);
-
-  // Three.js setup
+  // Three.js particle network background
   useEffect(() => {
-    if (!mountRef.current || !isWebGLAvailable()) {
-      setWebGLError(true);
-      return;
+    if (!mountRef.current) return;
+
+    try {
+      const c = document.createElement("canvas");
+      if (!(window.WebGLRenderingContext && (c.getContext("webgl") || c.getContext("experimental-webgl")))) {
+        setWebGLOk(false); return;
+      }
+    } catch { setWebGLOk(false); return; }
+
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
+    camera.position.z = 18;
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    mountRef.current.appendChild(renderer.domElement);
+
+    // ── Particle network ─────────────────────────────────────────────────────
+    const N = 85;
+    const DIST = 5.0;
+    const MAX_LINES = 900;
+
+    const pArr    = new Float32Array(N * 3);
+    const pVel    = [];
+    const pColArr = new Float32Array(N * 3);
+    const COLS    = [
+      new THREE.Color(0x22d3ee), new THREE.Color(0x3b82f6),
+      new THREE.Color(0xa855f7), new THREE.Color(0x06b6d4), new THREE.Color(0x818cf8),
+    ];
+
+    for (let i = 0; i < N; i++) {
+      pArr[i*3]   = (Math.random() - 0.5) * 40;
+      pArr[i*3+1] = (Math.random() - 0.5) * 24;
+      pArr[i*3+2] = (Math.random() - 0.5) * 6;
+      pVel.push({ x: (Math.random() - 0.5) * 0.012, y: (Math.random() - 0.5) * 0.012 });
+      const col = COLS[Math.floor(Math.random() * COLS.length)];
+      pColArr[i*3] = col.r; pColArr[i*3+1] = col.g; pColArr[i*3+2] = col.b;
     }
 
-    let scene, camera, renderer;
-    let animationId;
-    let resizeObserver;
+    const ptGeo = new THREE.BufferGeometry();
+    ptGeo.setAttribute("position", new THREE.BufferAttribute(pArr,    3));
+    ptGeo.setAttribute("color",    new THREE.BufferAttribute(pColArr, 3));
+    const ptMat = new THREE.PointsMaterial({
+      size: 0.08, vertexColors: true, transparent: true, opacity: 0.95,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+    // Soft glow halo behind each particle (same geometry, shared)
+    const glowMat = new THREE.PointsMaterial({
+      size: 0.55, color: 0x67e8f9, transparent: true, opacity: 0.06,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+    scene.add(new THREE.Points(ptGeo, ptMat));
+    scene.add(new THREE.Points(ptGeo, glowMat));
 
-    const initThreeJS = () => {
-      try {
-        // Scene setup
-        scene = new THREE.Scene();
+    const lPosArr = new Float32Array(MAX_LINES * 6);
+    const lColArr = new Float32Array(MAX_LINES * 6);
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute("position", new THREE.BufferAttribute(lPosArr, 3));
+    lineGeo.setAttribute("color",    new THREE.BufferAttribute(lColArr, 3));
+    const lineMat = new THREE.LineBasicMaterial({
+      vertexColors: true, transparent: true, opacity: 0.45,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+    scene.add(new THREE.LineSegments(lineGeo, lineMat));
 
-        // Camera setup
-        camera = new THREE.PerspectiveCamera(
-          75,
-          window.innerWidth / window.innerHeight,
-          0.1,
-          1000
-        );
+    // ── Floating wireframe shapes ─────────────────────────────────────────────
+    const SHAPE_DEFS = [
+      { Geo: THREE.IcosahedronGeometry, args: [0.45, 0], color: 0x22d3ee, pos: [-8,  4, -2], sx: 0.004, sy: 0.006 },
+      { Geo: THREE.OctahedronGeometry,  args: [0.50, 0], color: 0x7c3aed, pos: [10, -5, -1], sx: 0.005, sy: 0.004 },
+      { Geo: THREE.TetrahedronGeometry, args: [0.55, 0], color: 0x3b82f6, pos: [-12,-4,  0], sx: 0.003, sy: 0.007 },
+      { Geo: THREE.IcosahedronGeometry, args: [0.35, 0], color: 0xa855f7, pos: [ 7,  7, -3], sx: 0.006, sy: 0.003 },
+      { Geo: THREE.OctahedronGeometry,  args: [0.40, 0], color: 0x06b6d4, pos: [14,  2, -2], sx: 0.004, sy: 0.005 },
+      { Geo: THREE.TetrahedronGeometry, args: [0.45, 0], color: 0x818cf8, pos: [-6, -8, -1], sx: 0.007, sy: 0.003 },
+    ];
+    const shapeGeos  = SHAPE_DEFS.map(d => new d.Geo(...d.args));
+    const shapeMats  = SHAPE_DEFS.map(d => new THREE.MeshBasicMaterial({ color: d.color, wireframe: true, transparent: true, opacity: 0.35 }));
+    const shapeMeshes = SHAPE_DEFS.map((d, i) => {
+      const m = new THREE.Mesh(shapeGeos[i], shapeMats[i]);
+      m.position.set(...d.pos);
+      scene.add(m);
+      return m;
+    });
 
-        // Renderer setup with error handling
-        try {
-          renderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: true,
-            powerPreference: "high-performance",
-          });
-        } catch (rendererError) {
-          console.error("WebGLRenderer creation failed:", rendererError);
-          setWebGLError(true);
-          return;
-        }
-
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        
-        // Safely append renderer DOM element
-        if (mountRef.current && renderer.domElement) {
-          mountRef.current.appendChild(renderer.domElement);
-        } else {
-          setWebGLError(true);
-          return;
-        }
-
-        // Cosmic Background
-        const createStarfield = () => {
-          const starsGeometry = new THREE.BufferGeometry();
-          const starsMaterial = new THREE.PointsMaterial({
-            color: 0xffffff,
-            size: 0.1,
-            transparent: true,
-            opacity: 0.8,
-            blending: THREE.AdditiveBlending,
-          });
-
-          const starsVertices = [];
-          for (let i = 0; i < 5000; i++) {
-            const x = (Math.random() - 0.5) * 2000;
-            const y = (Math.random() - 0.5) * 2000;
-            const z = (Math.random() - 0.5) * 2000;
-            starsVertices.push(x, y, z);
-          }
-
-          starsGeometry.setAttribute(
-            "position",
-            new THREE.Float32BufferAttribute(starsVertices, 3)
-          );
-          const starField = new THREE.Points(starsGeometry, starsMaterial);
-          scene.add(starField);
-        };
-        createStarfield();
-
-        // Nebula Effect
-        const createNebula = () => {
-          const nebulaGeometry = new THREE.SphereGeometry(50, 32, 32);
-          const nebulaMaterial = new THREE.MeshBasicMaterial({
-            color: 0x4a00e0,
-            transparent: true,
-            opacity: 0.15,
-            blending: THREE.AdditiveBlending,
-          });
-          const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
-          nebula.position.set(20, 0, -100);
-          scene.add(nebula);
-
-          const nebula2 = nebula.clone();
-          nebula2.material = nebula.material.clone();
-          nebula2.material.color.setHex(0x00b4d8);
-          nebula2.position.set(-30, 40, -150);
-          nebula2.scale.set(0.7, 0.7, 0.7);
-          scene.add(nebula2);
-        };
-        createNebula();
-
-        // Camera Position
-        camera.position.z = 40;
-        camera.position.y = 0;
-
-        // Animation
-        const animate = () => {
-          animationId = requestAnimationFrame(animate);
-          if (renderer && scene && camera) {
-            try {
-              renderer.render(scene, camera);
-            } catch (error) {
-              console.error("Rendering error:", error);
-              cancelAnimationFrame(animationId);
-              setWebGLError(true);
-            }
-          }
-        };
-        animate();
-
-        // Handle resize with observer
-        resizeObserver = new ResizeObserver(() => {
-          handleResize(camera, renderer);
-        });
-        resizeObserver.observe(document.body);
-
-        // Handle context lost
-        renderer.domElement.addEventListener('webglcontextlost', (event) => {
-          console.warn('WebGL context lost');
-          event.preventDefault();
-          setWebGLError(true);
-        }, false);
-
-        renderer.domElement.addEventListener('webglcontextrestored', () => {
-          console.log('WebGL context restored');
-          initThreeJS();
-        }, false);
-
-      } catch (error) {
-        console.error("Three.js initialization error:", error);
-        setWebGLError(true);
-      }
+    // ── Mouse tracking ────────────────────────────────────────────────────────
+    const vFov  = 75 * (Math.PI / 180);
+    const viewH = 2 * Math.tan(vFov / 2) * 18;
+    const viewW = viewH * (W / H);
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+    const onMouseMove = (e) => {
+      mouse.tx = ((e.clientX / W) * 2 - 1) * viewW * 0.5;
+      mouse.ty = (-(e.clientY / H) * 2 + 1) * viewH * 0.5;
     };
+    window.addEventListener("mousemove", onMouseMove);
 
-    initThreeJS();
+    // ── Animate ───────────────────────────────────────────────────────────────
+    let animId;
+    let t = 0;
+    const MOUSE_R = 5;
+
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      t += 0.01;
+
+      mouse.x += (mouse.tx - mouse.x) * 0.06;
+      mouse.y += (mouse.ty - mouse.y) * 0.06;
+
+      const pos = ptGeo.attributes.position.array;
+      for (let i = 0; i < N; i++) {
+        const ix = i * 3, iy = ix + 1;
+        const dx = pos[ix] - mouse.x;
+        const dy = pos[iy] - mouse.y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < MOUSE_R && d > 0.01) {
+          const f = (MOUSE_R - d) / MOUSE_R * 0.007;
+          pVel[i].x += (dx / d) * f;
+          pVel[i].y += (dy / d) * f;
+        }
+        pVel[i].x *= 0.994;
+        pVel[i].y *= 0.994;
+        pos[ix]   += pVel[i].x;
+        pos[iy]   += pVel[i].y;
+        if (Math.abs(pos[ix]) > 20) { pVel[i].x *= -1; pos[ix] = Math.sign(pos[ix]) * 20; }
+        if (Math.abs(pos[iy]) > 12) { pVel[i].y *= -1; pos[iy] = Math.sign(pos[iy]) * 12; }
+      }
+      ptGeo.attributes.position.needsUpdate = true;
+
+      // Build connection lines
+      let li = 0;
+      const lp = lineGeo.attributes.position.array;
+      const lc = lineGeo.attributes.color.array;
+      for (let i = 0; i < N && li < MAX_LINES; i++) {
+        for (let j = i + 1; j < N && li < MAX_LINES; j++) {
+          const ax = pos[i*3], ay = pos[i*3+1], az = pos[i*3+2];
+          const bx = pos[j*3], by = pos[j*3+1], bz = pos[j*3+2];
+          const dist = Math.sqrt((ax-bx)*(ax-bx) + (ay-by)*(ay-by));
+          if (dist < DIST) {
+            const alpha = (1 - dist / DIST) * 0.92;
+            const k = li * 6;
+            lp[k]   = ax; lp[k+1] = ay; lp[k+2] = az;
+            lp[k+3] = bx; lp[k+4] = by; lp[k+5] = bz;
+            // True gradient: endpoint A uses particle i color, endpoint B uses particle j color
+            lc[k]   = pColArr[i*3]   * alpha;
+            lc[k+1] = pColArr[i*3+1] * alpha;
+            lc[k+2] = pColArr[i*3+2] * alpha;
+            lc[k+3] = pColArr[j*3]   * alpha;
+            lc[k+4] = pColArr[j*3+1] * alpha;
+            lc[k+5] = pColArr[j*3+2] * alpha;
+            li++;
+          }
+        }
+      }
+      lineGeo.setDrawRange(0, li * 2);
+      lineGeo.attributes.position.needsUpdate = true;
+      lineGeo.attributes.color.needsUpdate    = true;
+
+      // Pulse line network opacity
+      lineMat.opacity = 0.38 + Math.sin(t * 0.65) * 0.12;
+
+      // Rotate, float and pulse shapes
+      shapeMeshes.forEach((m, i) => {
+        m.rotation.x     += SHAPE_DEFS[i].sx;
+        m.rotation.y     += SHAPE_DEFS[i].sy;
+        m.position.y      = SHAPE_DEFS[i].pos[1] + Math.sin(t + i * 1.1) * 0.6;
+        shapeMats[i].opacity = 0.22 + Math.sin(t * 1.4 + i * 0.9) * 0.14;
+      });
+
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener("resize", onResize);
 
     return () => {
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-      
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-      
-      if (mountRef.current && renderer?.domElement) {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("mousemove", onMouseMove);
+      ptGeo.dispose(); ptMat.dispose(); glowMat.dispose();
+      lineGeo.dispose(); lineMat.dispose();
+      shapeGeos.forEach(g => g.dispose());
+      shapeMats.forEach(m => m.dispose());
+      if (mountRef.current?.contains(renderer.domElement))
         mountRef.current.removeChild(renderer.domElement);
-      }
-
-      // Dispose of Three.js resources
-      if (renderer) {
-        renderer.dispose();
-      }
+      renderer.dispose();
     };
-  }, [isWebGLAvailable, handleResize]);
-
-  // Education data
-  const education = [
-    {
-      degree: "Bachelor of Technology (CSE)",
-      institution: "SR INSTITUTE OF MANAGEMENT & TECHNOLOGY",
-      year: "2020-2024",
-      description: "Specialized in Web Technologies and Cloud Computing",
-      icon: <GraduationCap className="w-6 h-6 text-purple-400" />,
-    },
-    {
-      degree: "Master's in Web Development",
-      institution: "DUCAT - Pitampura",
-      year: "2024-2025",
-      description: "Focus on Software Development and Algorithms",
-      icon: <Layers className="w-6 h-6 text-blue-400" />,
-    },
-  ];
-
-  // Experience data
-  const experience = [
-    {
-      role: "MERN Stack Developer",
-      company: "Freelance MERN Stack Developer",
-      duration: "Currently",
-      responsibilities: [
-        "Completed multiple client projects as a freelance MERN Stack Developer.",
-        "Built full-stack web apps using MongoDB, Express.js, React, and Node.js",
-        "Designed responsive UIs with React.js and Tailwind CSS",
-        "Created secure REST APIs and integrated third-party services.",
-        "Managed databases and backend logic with Node.js and MongoDB",
-        "Fixed bugs and optimized app performance",
-      ],
-      icon: <Terminal className="w-6 h-6 text-green-400" />,
-    },
-    {
-      role: "MERN Stack Developer Intern",
-      company: "DUCAT - Pitampura",
-      duration: "Sep 2024 – April 2025",
-      responsibilities: [
-        "Developed full-stack web applications using MongoDB, Express.js, React, and Node.js",
-        "Built reusable components and managed state using React and Redux",
-        "Implemented RESTful APIs and handled CRUD operations",
-        "Worked on user authentication and authorization using JWT and cookies",
-      ],
-      icon: <ServerCog className="w-6 h-6 text-green-500" />,
-    },
-    {
-      role: "Frontend Developer Intern",
-      company: "Analyze Infotech Pvt. Ltd., Lucknow, Uttar Pradesh",
-      duration: "June 2022 | Feb 2023",
-      responsibilities: [
-        "Built responsive user interfaces using React.js and CSS",
-        "Collaborated with backend team to integrate RESTful APIs",
-        "Worked on dynamic frontend components and state management",
-        "Participated in code reviews and team stand-up meetings",
-      ],
-      icon: <Code2 className="w-6 h-6 text-cyan-400" />,
-    },
-    {
-      role: "Web Designing Intern",
-      company: "Internshala",
-      duration: "May 2022 – July 2022",
-      responsibilities: [
-        "Designed website layouts using HTML, CSS, and Bootstrap",
-        "Created responsive web pages compatible across devices",
-        "Improved UI/UX based on feedback and design principles",
-        "Collaborated with mentors to follow industry best practices",
-      ],
-      icon: <Palette className="w-6 h-6 text-pink-400" />,
-    },
-  ];
-
-  // Skills data
-  const skills = [
-    {
-      name: "JavaScript",
-      level: 95,
-      icon: <IoLogoJavascript className="w-5 h-5 text-blue-400" />,
-      color: "bg-blue-500",
-    },
-    {
-      name: "React",
-      level: 95,
-      icon: <Code2 className="w-5 h-5 text-cyan-400" />,
-      color: "bg-cyan-500",
-    },
-    {
-      name: "Node.js",
-      level: 90,
-      icon: <Server className="w-5 h-5 text-green-400" />,
-      color: "bg-green-500",
-    },
-    {
-      name: "MongoDB",
-      level: 85,
-      icon: <Database className="w-5 h-5 text-emerald-400" />,
-      color: "bg-emerald-500",
-    },
-    {
-      name: "Express",
-      level: 90,
-      icon: <CpuIcon className="w-5 h-5 text-violet-400" />,
-      color: "bg-violet-500",
-    },
-    {
-      name: "AWS",
-      level: 70,
-      icon: <Cloud className="w-5 h-5 text-orange-400" />,
-      color: "bg-orange-500",
-    },
-  ];
+  }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-950 overflow-hidden relative"
-      style={{ position: 'relative' }} // Ensure container has relative position
-    >
-      {/* Three.js Canvas */}
-      {webGLError ? (
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-900 to-gray-950 z-0" />
-      ) : (
-        <div ref={mountRef} className="fixed inset-0 pointer-events-none z-0" />
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-[#0d0d1a] via-[#0f0c29] to-[#1a1a2e] relative">
 
-      {/* Floating Particles Overlay */}
-      <div className="fixed inset-0 pointer-events-none z-1">
-        {[...Array(30)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-cyan-500/20"
-            style={{
-              width: `${Math.random() * 6 + 2}px`,
-              height: `${Math.random() * 6 + 2}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, Math.random() * 100 - 50],
-              x: [0, Math.random() * 100 - 50],
-              opacity: [0.2, 0.8, 0.2],
-            }}
-            transition={{
-              duration: Math.random() * 20 + 10,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-          />
-        ))}
+      {/* Three.js stars */}
+      {webGLOk
+        ? <div ref={mountRef} className="fixed inset-0 z-0 pointer-events-none opacity-75" />
+        : <div className="fixed inset-0 z-0 bg-[#0d0d1a]" />
+      }
+
+      {/* Dot grid pattern — subtle tech texture */}
+      <div
+        className="fixed inset-0 z-[1] pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)",
+          backgroundSize: "36px 36px",
+        }}
+      />
+
+      {/* Corner accent glows — small, precise */}
+      <div className="fixed inset-0 z-[2] pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-0 w-72 h-72 opacity-30"
+          style={{ background: "radial-gradient(ellipse at top left, #06b6d4, transparent 65%)", filter: "blur(35px)" }} />
+        <div className="absolute top-0 right-0 w-64 h-64 opacity-20"
+          style={{ background: "radial-gradient(ellipse at top right, #7c3aed, transparent 65%)", filter: "blur(40px)" }} />
+        <div className="absolute bottom-0 right-0 w-72 h-72 opacity-20"
+          style={{ background: "radial-gradient(ellipse at bottom right, #3b82f6, transparent 65%)", filter: "blur(45px)" }} />
+        <div className="absolute bottom-0 left-0 w-60 h-60 opacity-15"
+          style={{ background: "radial-gradient(ellipse at bottom left, #a855f7, transparent 65%)", filter: "blur(40px)" }} />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10">
-        {/* Parallax header */}
-        <motion.div
-          style={{ y: y1 }}
-          className="relative pt-32 pb-5 px-4 sm:px-6 lg:px-8 text-center"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, type: "spring" }}
-            className="inline-block mb-6"
-          >
-            <div className="relative">
-              <div className="absolute -inset-4 bg-blue-500/20 rounded-full blur-xl"></div>
-              <div className="relative px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-medium shadow-lg">
-                MERN Stack Developer
-              </div>
-            </div>
-          </motion.div>
+      {/* Vignette */}
+      <div className="fixed inset-0 z-[3] bg-gradient-to-b from-[#0d0d1a]/15 via-transparent to-[#0d0d1a]/35 pointer-events-none" />
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl font-bold text-white sm:text-6xl mb-6"
-          >
+      {/* Page content */}
+      <div className="relative z-[10] pt-24 pb-20 px-4 sm:px-5 max-w-7xl mx-auto">
+
+        {/* ── Hero header ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-14"
+        >
+          <span className="inline-block px-4 py-1.5 text-xs font-bold tracking-[0.2em] uppercase text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 rounded-full mb-4">
+            MERN Stack Developer
+          </span>
+          <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-4">
             About{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">
               Me
             </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-300 max-w-3xl mx-auto"
-          >
-            Crafting digital experiences with cutting-edge technologies and
-            innovative solutions.
-          </motion.p>
+          </h1>
+          <p className="text-white/45 text-lg max-w-2xl mx-auto leading-relaxed">
+            Crafting digital experiences with cutting-edge technologies and innovative solutions.
+          </p>
         </motion.div>
-        <div className="mb-10">
+
+        {/* ── Profile card ── */}
+        <div className="mb-16">
           <ProfileCard />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32 relative z-10">
-          {/* Education Section */}
-          <motion.section
-            className="mb-20"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <motion.div
-              className="flex items-center mb-12"
-              initial={{ x: -50 }}
-              whileInView={{ x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative">
-                <div className="absolute -inset-2 bg-blue-500/20 rounded-full blur-md"></div>
-                <div className="relative p-3 rounded-full bg-gray-800 mr-4 border border-gray-700">
-                  <GraduationCap className="w-8 h-8 text-cyan-400" />
-                </div>
-              </div>
-              <h2 className="text-3xl font-bold text-white">Education</h2>
-            </motion.div>
+        {/* ── Education ── */}
+        <section className="mb-14">
+          <SectionHeader
+            icon={<GraduationCap className="w-5 h-5 text-cyan-400" />}
+            title="Education"
+            gradient="linear-gradient(to right, #22d3ee, #3b82f6)"
+          />
+          <div className="grid md:grid-cols-2 gap-5">
+            {EDUCATION.map((edu, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.12 }}
+                viewport={{ once: true }}
+                className="relative rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all group overflow-hidden backdrop-blur-sm"
+              >
+                {/* Colored top bar */}
+                <div className="h-[3px] w-full" style={{ background: edu.topBar }} />
 
-            <div className="grid md:grid-cols-2 gap-8">
-              {education.map((edu, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                  viewport={{ once: true }}
-                  className="relative group"
-                >
-                  <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
-                  <div className="relative bg-gray-800 p-8 rounded-xl shadow-lg h-full border border-gray-700">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center">
-                        <div className="p-2 rounded-lg bg-gray-700 mr-4">
-                          {edu.icon}
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-semibold text-white">
-                            {edu.degree}
-                          </h3>
-                          <p className="text-cyan-400">{edu.institution}</p>
-                        </div>
+                <div className="p-6 flex gap-5">
+                  {/* Left — main content */}
+                  <div className="flex-1 min-w-0">
+                    {/* Icon + degree */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-11 h-11 rounded-2xl ${edu.bg} border ${edu.border} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                        {edu.icon}
                       </div>
-                      <span className="px-3 py-1 bg-gray-700 text-cyan-400 rounded-full text-sm font-medium">
-                        {edu.year}
-                      </span>
+                      <h3 className="text-[15px] font-bold text-white leading-snug">{edu.degree}</h3>
                     </div>
-                    <p className="text-gray-300">{edu.description}</p>
+
+                    {/* Institution + location */}
+                    <p className={`text-sm font-semibold ${edu.color} mb-0.5`}>{edu.institution}</p>
+                    <p className="text-[11px] text-white/30 mb-3">{edu.location}</p>
+
+                    {/* Description */}
+                    <p className="text-xs text-white/40 leading-relaxed mb-4">{edu.description}</p>
+
+                    {/* Subject tags */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {edu.tags.map((tag, j) => (
+                        <span key={j} className="text-[10px] px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/50">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
 
-          {/* Experience Section */}
-          <motion.section
-            className="mb-32"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <motion.div
-              className="flex items-center mb-12"
-              initial={{ x: -50 }}
-              whileInView={{ x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative">
-                <div className="absolute -inset-2 bg-blue-500/20 rounded-full blur-md"></div>
-                <div className="relative p-3 rounded-full bg-gray-800 mr-4 border border-gray-700">
-                  <Briefcase className="w-8 h-8 text-green-400" />
+                  {/* Right — year + type */}
+                  <div className="flex flex-col items-end justify-between gap-3 flex-shrink-0">
+                    <span className={`text-[10px] font-mono ${edu.color} ${edu.bg} border ${edu.border} px-2.5 py-1 rounded-full whitespace-nowrap`}>
+                      {edu.year}
+                    </span>
+                    <div className="flex flex-col items-end gap-1.5">
+                      <div className={`w-8 h-8 rounded-xl ${edu.bg} border ${edu.border} flex items-center justify-center opacity-50`}>
+                        {edu.icon}
+                      </div>
+                      <p className="text-[10px] text-white/25 text-right leading-tight max-w-[80px]">{edu.type}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <h2 className="text-3xl font-bold text-white">Experience</h2>
-            </motion.div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
 
-            <div className="space-y-8">
-              {experience.map((exp, index) => (
+        {/* ── Skills ── */}
+        <section className="mb-14">
+          <SectionHeader
+            icon={<Rocket className="w-5 h-5 text-purple-400" />}
+            title="Technical Skills"
+            gradient="linear-gradient(to right, #a855f7, #3b82f6)"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {SKILLS.map((skill, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.07 }}
+                viewport={{ once: true }}
+                className="p-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] hover:bg-white/[0.05] hover:border-purple-500/20 transition-all group"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] flex items-center justify-center group-hover:scale-110 transition-transform">
+                      {skill.icon}
+                    </div>
+                    <span className="text-sm font-semibold text-white">{skill.name}</span>
+                  </div>
+                  <span className="text-sm font-bold text-white/60">{skill.level}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${skill.level}%` }}
+                    transition={{ duration: 0.9, delay: i * 0.07, ease: "easeOut" }}
+                    viewport={{ once: true }}
+                    className="h-full rounded-full"
+                    style={{ background: skill.gradient, boxShadow: `0 0 8px ${skill.gradient.split(',')[1]?.trim().replace(')', '')}40` }}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Experience timeline ── */}
+        <section className="mb-14">
+          <SectionHeader
+            icon={<Briefcase className="w-5 h-5 text-green-400" />}
+            title="Experience"
+            gradient="linear-gradient(to right, #4ade80, #22d3ee)"
+          />
+          <div className="relative">
+            {/* Vertical line */}
+            <div className="absolute left-[18px] top-2 bottom-2 w-px bg-gradient-to-b from-green-500/40 via-cyan-500/20 to-transparent" />
+
+            <div className="space-y-5">
+              {EXPERIENCE.map((exp, i) => (
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                  key={i}
+                  initial={{ opacity: 0, x: -15 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                  transition={{ delay: i * 0.08 }}
                   viewport={{ once: true }}
-                  className="relative group"
+                  className="relative pl-12"
                 >
-                  <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
-                  <div className="relative bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center">
-                        <div className="p-2 rounded-lg bg-gray-700 mr-4">
+                  {/* Timeline dot */}
+                  <div className="absolute left-[11px] top-5 w-4 h-4 rounded-full border-2 border-white/20 bg-[#0d0d1a] flex items-center justify-center">
+                    <div className={`w-1.5 h-1.5 rounded-full ${exp.dotColor}`} />
+                  </div>
+
+                  <div className="p-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] hover:bg-white/[0.05] hover:border-white/[0.1] transition-all group">
+                    {/* Header */}
+                    <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-8 h-8 rounded-lg ${exp.bg} border ${exp.border} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
                           {exp.icon}
                         </div>
                         <div>
-                          <h3 className="text-xl font-semibold text-white">
-                            {exp.role}
-                          </h3>
-                          <p className="text-green-400">{exp.company}</p>
+                          <h3 className="text-sm font-bold text-white leading-tight">{exp.role}</h3>
+                          <p className={`text-xs ${exp.color} mt-0.5`}>{exp.company}</p>
+                          {exp.location && (
+                            <p className="text-[10px] text-white/30 mt-0.5">{exp.location}</p>
+                          )}
                         </div>
                       </div>
-                      <span className="px-3 py-1 bg-gray-700 text-green-400 rounded-full text-sm font-medium">
+                      <span className={`text-[10px] font-mono ${exp.color} ${exp.bg} border ${exp.border} px-2.5 py-1 rounded-full whitespace-nowrap`}>
                         {exp.duration}
                       </span>
                     </div>
-                    <ul className="space-y-3">
-                      {exp.responsibilities.map((item, i) => (
-                        <motion.li
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.4, delay: 0.1 * i }}
-                          viewport={{ once: true }}
-                          className="flex items-start text-gray-300"
-                        >
-                          <span className="mr-3 mt-1 text-cyan-500">▹</span>
+
+                    {/* Responsibilities */}
+                    <ul className="space-y-1.5">
+                      {exp.responsibilities.map((item, j) => (
+                        <li key={j} className="flex items-start gap-2 text-sm text-white/45">
+                          <span className="text-cyan-500 mt-0.5 flex-shrink-0 text-xs">▹</span>
                           {item}
-                        </motion.li>
+                        </li>
                       ))}
                     </ul>
                   </div>
                 </motion.div>
               ))}
             </div>
-          </motion.section>
+          </div>
+        </section>
 
-          {/* Skills Section */}
-          <motion.section
-            className="mb-32"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+        {/* ── Philosophy ── */}
+        <section>
+          <div
+            className="relative rounded-3xl border border-white/[0.07] overflow-hidden"
+            style={{ background: "linear-gradient(135deg, rgba(13,13,26,0.97), rgba(15,12,41,0.94))" }}
           >
-            <motion.div
-              className="flex items-center mb-12"
-              initial={{ x: -50 }}
-              whileInView={{ x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative">
-                <div className="absolute -inset-2 bg-blue-500/20 rounded-full blur-md"></div>
-                <div className="relative p-3 rounded-full bg-gray-800 mr-4 border border-gray-700">
-                  <Rocket className="w-8 h-8 text-purple-400" />
-                </div>
-              </div>
-              <h2 className="text-3xl font-bold text-white">
-                Technical Skills
-              </h2>
-            </motion.div>
+            {/* Gradient top bar */}
+            <div className="h-[2px] w-full" style={{ background: "linear-gradient(to right, #22d3ee, #a855f7, #f472b6)" }} />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {skills.map((skill, index) => (
+            {/* Ambient glows */}
+            <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-violet-500/5 blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 p-8 md:p-10">
+
+              {/* Top: header + quote */}
+              <div className="flex flex-col lg:flex-row lg:items-center gap-6 mb-10">
+                <div className="flex-1">
+                  <SectionHeader
+                    icon={<Sparkles className="w-5 h-5 text-cyan-400" />}
+                    title="Development Philosophy"
+                    gradient="linear-gradient(to right, #22d3ee, #a855f7)"
+                  />
+                  <p className="text-white/50 text-base leading-relaxed max-w-2xl -mt-2">
+                    I don't just write code — I craft scalable, secure, and human-centered digital products.
+                    Every line serves a purpose, every API is designed to last, and every UI tells a story.
+                  </p>
+                </div>
+                {/* Quote block */}
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  className="relative group"
+                  className="lg:w-72 p-5 rounded-2xl border border-cyan-500/15 bg-cyan-500/[0.04] flex-shrink-0"
                 >
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
-                  <div className="relative bg-gray-800 p-6 rounded-xl shadow-lg h-full border border-gray-700">
-                    <div className="flex items-center mb-4">
-                      <div className={`p-3 rounded-lg bg-gray-700 mr-3`}>
-                        {skill.icon}
-                      </div>
-                      <h3 className="text-lg font-semibold text-white">
-                        {skill.name}
-                      </h3>
-                    </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2.5 mb-1">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        transition={{
-                          duration: 1,
-                          delay: index * 0.1,
-                          type: "spring",
-                        }}
-                        viewport={{ once: true }}
-                        className={`h-2.5 rounded-full ${skill.color}`}
-                      />
-                    </div>
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 + 0.5 }}
-                      viewport={{ once: true }}
-                      className="text-sm text-gray-400 text-right"
-                    >
-                      {skill.level}% proficiency
-                    </motion.div>
-                  </div>
+                  <span className="text-5xl text-cyan-500/30 font-serif leading-none">"</span>
+                  <p className="text-sm text-white/60 italic leading-relaxed -mt-3">
+                    Build for users first, scale second, and never ship something you wouldn't use yourself.
+                  </p>
+                  <p className="text-xs text-cyan-400/60 mt-2 font-semibold">— Prakash Mani</p>
                 </motion.div>
-              ))}
-            </div>
-          </motion.section>
+              </div>
 
-          {/* Philosophy Section */}
-          <motion.section
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <div className="relative rounded-3xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 opacity-90"></div>
-              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
-              <div className="absolute inset-0 border border-cyan-500/30 rounded-3xl pointer-events-none"></div>
-              <motion.div
-                className="relative z-10 p-12 text-white"
-                initial={{ y: 50 }}
-                whileInView={{ y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-              >
-                <h2 className="text-3xl font-bold mb-6">
-                  Development Philosophy
-                </h2>
-                <motion.p
-                  className="text-xl mb-8 max-w-3xl text-gray-300"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  viewport={{ once: true }}
-                >
-                  I believe in creating technology that's not just functional
-                  but delightful to use. Every line of code should serve a
-                  purpose and every interface should tell a story.
-                </motion.p>
+              {/* Cards grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {PHILOSOPHY_CARDS.map((card, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.07 }}
+                    whileHover={{ y: -4 }}
+                    viewport={{ once: true }}
+                    className={`p-5 rounded-2xl border ${card.border} bg-white/[0.025] hover:bg-white/[0.05] transition-all group cursor-default`}
+                  >
+                    <div className={`w-10 h-10 rounded-xl ${card.bg} border ${card.border} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                      {card.icon}
+                    </div>
+                    <h4 className={`text-sm font-bold ${card.color} mb-1.5`}>{card.title}</h4>
+                    <p className="text-xs text-white/40 leading-relaxed">{card.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
 
-                <div className="flex flex-wrap gap-4">
-                  {[
-                    "Clean Code Principles",
-                    "User-Centric Design",
-                    "Performance Optimization",
-                    "Continuous Learning",
-                    "Agile Development",
-                    "Collaborative Approach",
-                  ].map((item, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: 0.1 * index }}
-                      viewport={{ once: true }}
-                      whileHover={{ y: -5 }}
-                      className="px-6 py-3 bg-white/5 rounded-full backdrop-blur-sm border border-cyan-500/20 text-cyan-400"
-                    >
-                      {item}
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
             </div>
-          </motion.section>
-        </div>
+          </div>
+        </section>
+
       </div>
     </div>
   );

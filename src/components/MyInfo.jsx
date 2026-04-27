@@ -1,257 +1,202 @@
-import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Canvas, useFrame, useThree } from "@react-three/fiber"; // Added useThree import
-import { OrbitControls, Float, Sparkles, Text } from "@react-three/drei";
-import { Mail, Phone, MapPin, Briefcase } from "lucide-react";
-import { FaGraduationCap } from "react-icons/fa";
+import { Mail, Phone, MapPin, Briefcase, GraduationCap, Calendar } from "lucide-react";
+import { SiReact, SiNextdotjs, SiNodedotjs, SiMongodb, SiTypescript, SiExpress } from "react-icons/si";
+import { TbBrandReactNative } from "react-icons/tb";
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
+const INFO_ITEMS = [
+  {
+    icon: <Mail className="w-4 h-4" />,
+    label: "Email",
+    value: "prakashmanig000@gmail.com",
+    color: "text-cyan-400",
+    bg: "bg-cyan-500/10",
+    border: "border-cyan-500/20",
+  },
+  {
+    icon: <Phone className="w-4 h-4" />,
+    label: "Phone",
+    value: "+91 8795901180",
+    color: "text-green-400",
+    bg: "bg-green-500/10",
+    border: "border-green-500/20",
+  },
+  {
+    icon: <GraduationCap className="w-4 h-4" />,
+    label: "Qualification",
+    value: "B.Tech – Computer Science",
+    color: "text-violet-400",
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/20",
+  },
+  {
+    icon: <MapPin className="w-4 h-4" />,
+    label: "Location",
+    value: "Azadpur, Delhi · India",
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
+  },
+];
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
+const STATS = [
+  { value: "3+", label: "Years Exp." },
+  { value: "15+", label: "Projects" },
+  { value: "10+", label: "Technologies" },
+];
 
-  componentDidCatch(error, errorInfo) {
-    console.error("3D Canvas Error:", error, errorInfo);
-  }
+const TECH_STACK = [
+  { icon: <SiReact className="w-3.5 h-3.5" />,           label: "React",        color: "#22d3ee" },
+  { icon: <SiNextdotjs className="w-3.5 h-3.5" />,       label: "Next.js",      color: "#e2e8f0" },
+  { icon: <TbBrandReactNative className="w-3.5 h-3.5" />,label: "React Native", color: "#38bdf8" },
+  { icon: <SiNodedotjs className="w-3.5 h-3.5" />,       label: "Node.js",      color: "#4ade80" },
+  { icon: <SiExpress className="w-3.5 h-3.5" />,         label: "Express.js",   color: "#a78bfa" },
+  { icon: <SiMongodb className="w-3.5 h-3.5" />,         label: "MongoDB",      color: "#34d399" },
+  { icon: <SiTypescript className="w-3.5 h-3.5" />,      label: "TypeScript",   color: "#60a5fa" },
+];
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl">
-          <div className="flex items-center justify-center h-full text-red-400">
-            3D rendering failed. Please refresh.
-          </div>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
+const ProfileCard = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6 }}
+    className="relative rounded-3xl overflow-hidden border border-white/[0.07]"
+    style={{
+      background: "linear-gradient(135deg, rgba(13,13,26,0.97) 0%, rgba(15,12,41,0.95) 50%, rgba(13,13,26,0.97) 100%)",
+      boxShadow: "0 0 60px rgba(34,211,238,0.06), 0 0 120px rgba(168,85,247,0.04)",
+    }}
+  >
+    {/* Ambient corner glows */}
+    <div className="absolute top-0 left-0 w-64 h-64 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none" />
+    <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full bg-violet-500/5 blur-3xl pointer-events-none" />
+    {/* Top gradient bar */}
+    <div className="h-[2px] w-full" style={{ background: "linear-gradient(to right, #22d3ee, #a855f7, #3b82f6)" }} />
 
-const FloatingTechIcons = () => {
-  const icons = useRef([]);
-  const { viewport } = useThree();
+    <div className="relative z-10 p-5 md:p-7 flex flex-col lg:flex-row gap-6 lg:gap-8 items-center lg:items-stretch">
 
-  useFrame((state) => {
-    icons.current.forEach((icon, i) => {
-      if (icon) {
-        icon.position.y =
-          Math.sin(state.clock.getElapsedTime() * 0.5 + i * 2) * 0.5;
-        icon.rotation.y += 0.01;
-      }
-    });
-  });
-
-  const techData = [
-    { position: [-3, 1, -2], color: "#4DB33D", size: 1, text: "M" },
-    { position: [3, -1, -1], color: "#000000", size: 1, text: "E" },
-    { position: [0, 0, -3], color: "#61DAFB", size: 1.2, text: "R" },
-    { position: [3, 0.5, -2], color: "#339933", size: 1, text: "N" },
-  ];
-
-  return (
-    <>
-      {techData.map((tech, i) => (
-        <Float key={i} speed={2} rotationIntensity={1} floatIntensity={2}>
-          <group ref={(el) => (icons.current[i] = el)} position={tech.position}>
-            <mesh>
-              <boxGeometry args={[tech.size, tech.size, 0.2]} />
-              <meshStandardMaterial
-                color={tech.color}
-                emissive={tech.color}
-                emissiveIntensity={0.5}
-              />
-            </mesh>
-            <Text
-              position={[0, 0, 0.11]}
-              fontSize={tech.size * 0.5}
-              color="white"
-              anchorX="center"
-              anchorY="middle"
-              font="https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff"
-            >
-              {tech.text}
-            </Text>
-          </group>
-        </Float>
-      ))}
-    </>
-  );
-};
-
-const ProfileInfoItem = ({ icon, label, value }) => {
-  return (
-    <motion.div 
-      whileHover={{ y: -3 }}
-      className="flex items-start gap-3 p-3 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700"
-    >
-      <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400">
-        {React.cloneElement(icon, { className: "w-5 h-5" })}
-      </div>
-      <div className="text-left">
-        <p className="text-sm text-gray-400">{label}</p>
-        <p className="text-white font-medium">{value}</p>
-      </div>
-    </motion.div>
-  );
-};
-
-const TechBadge = ({ color, text }) => {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-3 py-1 rounded-full flex items-center gap-2"
-      style={{ backgroundColor: `${color}20`, border: `1px solid ${color}30` }}
-    >
-      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-      <span className="text-sm font-medium text-white">{text}</span>
-    </motion.div>
-  );
-};
-
-const ProfileCard = () => {
-  const [canvasError, setCanvasError] = useState(false);
-  const canvasRef = useRef();
-
-  useEffect(() => {
-    const handleContextLost = (event) => {
-      event.preventDefault();
-      console.warn("WebGL context lost. Attempting to recover...");
-      setCanvasError(true);
-    };
-
-    const handleContextRestored = () => {
-      console.log("WebGL context restored");
-      setCanvasError(false);
-    };
-
-    const canvas = canvasRef.current?.querySelector('canvas');
-    if (canvas) {
-      canvas.addEventListener('webglcontextlost', handleContextLost);
-      canvas.addEventListener('webglcontextrestored', handleContextRestored);
-    }
-
-    return () => {
-      if (canvas) {
-        canvas.removeEventListener('webglcontextlost', handleContextLost);
-        canvas.removeEventListener('webglcontextrestored', handleContextRestored);
-      }
-    };
-  }, []);
-
-  return (
-    <div className="relative md:h-[50vh] min-h-[500px] w-full overflow-hidden rounded-2xl shadow-2xl">
-      {/* 3D Background */}
-      <div className="absolute inset-0 -z-10 opacity-50" ref={canvasRef}>
-        <ErrorBoundary>
-          <Canvas
-            camera={{ position: [0, 0, 5], fov: 50 }}
-            gl={{
-              antialias: true,
-              powerPreference: "high-performance",
-              preserveDrawingBuffer: true,
+      {/* ── Left: photo + name ── */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        className="flex flex-col items-center justify-between gap-5 flex-shrink-0"
+      >
+        {/* Photo with animated ring */}
+        <div className="relative">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-[-6px] rounded-full"
+            style={{
+              background: "conic-gradient(from 0deg, #22d3ee, #a855f7, #3b82f6, #22d3ee)",
+              padding: "2px",
+              borderRadius: "9999px",
             }}
-          >
-            <ambientLight intensity={0.5} />
-            <pointLight position={[10, 10, 10]} intensity={1} />
-            <pointLight position={[-10, -10, -10]} color="#3b82f6" intensity={0.5} />
-            
-            {!canvasError && (
-              <>
-                <FloatingTechIcons />
-                <Sparkles
-                  position={[0, 0, 0]}
-                  count={100}
-                  speed={0.1}
-                  opacity={0.6}
-                  color="#3b82f6"
-                  size={2}
-                  scale={[20, 20, 10]}
-                />
-                <OrbitControls 
-                  enableZoom={false} 
-                  enablePan={false} 
-                  enableRotate={false} 
-                />
-              </>
-            )}
-          </Canvas>
-        </ErrorBoundary>
-      </div>
-
-      {/* Fallback if canvas fails */}
-      {canvasError && (
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl flex items-center justify-center">
-          <p className="text-red-400">3D rendering unavailable</p>
-        </div>
-      )}
-
-      {/* Profile Content */}
-      <div className="relative z-10 h-full bg-blue-800/10 flex md:gap-30 flex-col lg:flex-row items-center justify-center px-8">
-        {/* Profile Image - Increased size */}
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative group"
-        >
-          <div className="absolute rounded-full blur group-hover:opacity-100 transition-opacity"></div>
-          <div className="relative h-64 w-64 rounded-full border-4 border-white/10 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br"></div>
-            <img 
-              src="/portfolio/prakash.png" 
-              alt="Profile"
-              className="h-full w-full object-cover mix-blend-luminosity"
+          />
+          <div className="relative w-36 h-36 rounded-full overflow-hidden border-4 border-[#0d0d1a]">
+            <img
+              src="/portfolio/prakash.png"
+              alt="Prakash Mani"
+              className="w-full h-full object-cover"
             />
           </div>
-        </motion.div>
+          {/* Online dot */}
+          <div className="absolute bottom-2 right-2 w-4 h-4 rounded-full bg-emerald-400 border-2 border-[#0d0d1a]">
+            <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-60" />
+          </div>
+        </div>
 
-        {/* Profile Details */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex-1 text-center lg:text-left"
+        {/* Name + title */}
+        <div className="text-center">
+          <h2 className="text-2xl font-extrabold text-white tracking-tight">Prakash Mani</h2>
+          <div className="flex items-center justify-center gap-1.5 mt-1.5">
+            <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="text-sm font-medium text-cyan-400">MERN Stack Developer</span>
+          </div>
+          <div className="flex items-center justify-center gap-1.5 mt-1">
+            <Calendar className="w-3 h-3 text-white/30" />
+            <span className="text-[11px] text-white/30">Available for work</span>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="flex gap-2.5">
+          {STATS.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.08 }}
+              className="text-center px-2.5 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.06]"
+            >
+              <p className="text-base font-extrabold bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent leading-none">
+                {s.value}
+              </p>
+              <p className="text-[9px] text-white/35 mt-0.5 whitespace-nowrap">{s.label}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── Right: info + tech ── */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="flex-1 w-full min-w-0 flex flex-col justify-between gap-3"
+      >
+        {/* Info grid — flex-1 + auto-rows fills available height */}
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 flex-1"
+          style={{ gridAutoRows: "1fr" }}
         >
-          <div className="mb-6">
-            <h1 className="text-4xl font-bold text-white mb-2">Prakash Mani</h1>
-            <div className="flex items-center justify-center lg:justify-start gap-2 text-cyan-400">
-              <Briefcase className="w-5 h-5" />
-              <span className="text-xl font-medium">MERN Stack Developer</span>
-            </div>
-          </div>
+          {INFO_ITEMS.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 + i * 0.08 }}
+              whileHover={{ y: -2 }}
+              className={`h-full flex items-center gap-3 p-3.5 rounded-xl border ${item.border} bg-white/[0.025] hover:bg-white/[0.05] transition-all group`}
+            >
+              <div className={`w-8 h-8 rounded-lg ${item.bg} border ${item.border} flex items-center justify-center flex-shrink-0 ${item.color} group-hover:scale-110 transition-transform`}>
+                {item.icon}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] font-semibold text-white/35 uppercase tracking-wider mb-0.5">
+                  {item.label}
+                </p>
+                <p className="text-sm font-semibold text-white/85 break-all leading-snug">
+                  {item.value}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto lg:mx-0">
-            <ProfileInfoItem icon={<Mail />} label="Email" value="prakashmanig000@gmail.com" />
-            <ProfileInfoItem icon={<Phone />} label="Phone" value="+91 8795901180" />
-            <ProfileInfoItem icon={<FaGraduationCap />} label="Qualification" value="Bachelor of Technology - { Computer Science and Technology }" />
-            <ProfileInfoItem icon={<MapPin />} label="Address" value="Dubauli, Kushinagar Uttar Pradesh India 274302" />
-            <ProfileInfoItem icon={<MapPin />} label="City/State" value="Padrauna, Uttar Pradesh" />
-            <ProfileInfoItem icon={<MapPin />} label="Country" value="India" />
+        {/* Tech stack */}
+        <div>
+          <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest mb-2.5">
+            Tech Stack
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {TECH_STACK.map((tech, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 + i * 0.06 }}
+                whileHover={{ y: -3, scale: 1.08 }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.09] transition-all cursor-default"
+              >
+                <span style={{ color: tech.color }} className="flex-shrink-0">{tech.icon}</span>
+                <span className="text-xs font-semibold text-white/80">{tech.label}</span>
+              </motion.div>
+            ))}
           </div>
-
-          {/* Tech Badges */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-8 flex flex-wrap justify-center lg:justify-start gap-2"
-          >
-            <TechBadge color="#4DB33D" text="MongoDB" />
-            <TechBadge color="#000000" text="Express" />
-            <TechBadge color="#61DAFB" text="React" />
-            <TechBadge color="#339933" text="Node.js" />
-          </motion.div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </div>
-  );
-};
+  </motion.div>
+);
 
 export default ProfileCard;
