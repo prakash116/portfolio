@@ -1,450 +1,358 @@
-import React, { useState, useRef, useEffect, Suspense } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import {
-  OrbitControls,
-  Text,
-  Float,
-  Sparkles,
-  useTexture,
-} from "@react-three/drei";
 import * as THREE from "three";
-import { Code, Database, Cpu, Smartphone, Globe, Server } from "lucide-react";
+import {
+  Code, Database, Cpu, Smartphone, Globe, Server,
+  Sparkles, CheckCircle2,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-// Error Boundary Component
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("Error in 3D Canvas:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="bg-red-900/20 p-4 rounded-lg border border-red-700 text-center">
-          <p className="text-red-400">3D rendering failed. Please refresh.</p>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-// Custom Text component for icons
-const IconText = ({ children, ...props }) => {
-  return (
-    <Text
-      font="https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff"
-      {...props}
-    >
-      {children}
-    </Text>
-  );
-};
-
-// 3D Floating Tech Icons Component
-const FloatingTechIcons = () => {
-  const icons = useRef([]);
-  const { viewport } = useThree();
-
-  useFrame((state) => {
-    icons.current.forEach((icon, i) => {
-      if (icon) {
-        icon.position.y =
-          Math.sin(state.clock.getElapsedTime() * 0.5 + i * 2) * 0.5;
-        icon.rotation.y += 0.01;
-      }
-    });
-  });
-
-  return (
-    <>
-      {/* MongoDB Icon */}
-      <Float speed={2} rotationIntensity={1} floatIntensity={2}>
-        <group
-          ref={(el) => (icons.current[0] = el)}
-          position={[-viewport.width / 3, 1, -2]}
-        >
-          <mesh>
-            <boxGeometry args={[1, 1, 0.2]} />
-            <meshStandardMaterial
-              color="#4DB33D"
-              emissive="#4DB33D"
-              emissiveIntensity={0.5}
-            />
-          </mesh>
-          <IconText
-            position={[0, 0, 0.11]}
-            fontSize={0.8}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
-          >
-            MDB
-          </IconText>
-        </group>
-      </Float>
-
-      {/* Express Icon */}
-      <Float speed={1.5} rotationIntensity={0.5} floatIntensity={1.5}>
-        <group
-          ref={(el) => (icons.current[1] = el)}
-          position={[viewport.width / 4, -1, -1]}
-        >
-          <mesh>
-            <boxGeometry args={[1, 1, 0.2]} />
-            <meshStandardMaterial
-              color="#000000"
-              emissive="#000000"
-              emissiveIntensity={0.5}
-            />
-          </mesh>
-          <IconText
-            position={[0, 0, 0.11]}
-            fontSize={0.8}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
-          >
-            EX
-          </IconText>
-        </group>
-      </Float>
-
-      {/* React Icon */}
-      <Float speed={2.5} rotationIntensity={0.8} floatIntensity={2.2}>
-        <group ref={(el) => (icons.current[2] = el)} position={[0, 0, -3]}>
-          <mesh>
-            <boxGeometry args={[1.2, 1.2, 0.2]} />
-            <meshStandardMaterial
-              color="#61DAFB"
-              emissive="#61DAFB"
-              emissiveIntensity={0.5}
-            />
-          </mesh>
-          <IconText
-            position={[0, 0, 0.11]}
-            fontSize={0.8}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
-          >
-            R
-          </IconText>
-        </group>
-      </Float>
-
-      {/* Node.js Icon */}
-      <Float speed={1.8} rotationIntensity={0.6} floatIntensity={1.8}>
-        <group
-          ref={(el) => (icons.current[3] = el)}
-          position={[viewport.width / 3, 0.5, -2]}
-        >
-          <mesh>
-            <boxGeometry args={[1, 1, 0.2]} />
-            <meshStandardMaterial
-              color="#339933"
-              emissive="#339933"
-              emissiveIntensity={0.5}
-            />
-          </mesh>
-          <IconText
-            position={[0, 0, 0.11]}
-            fontSize={0.8}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
-          >
-            N
-          </IconText>
-        </group>
-      </Float>
-    </>
-  );
-};
-
-// 3D Background Component
-const ServicesBackground = () => {
-  const meshRef = useRef();
-  const { viewport } = useThree();
-  const texture = useTexture("/portfolio/grid-texture.jpg");
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.z += 0.001;
-    }
-  });
-
-  return (
-    <>
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -viewport.height / 2, -10]}
-      >
-        <planeGeometry args={[viewport.width * 2, viewport.height * 2]} />
-        <meshStandardMaterial
-          color="#1e293b"
-          map={texture}
-          transparent
-          opacity={0.2}
-          side={THREE.DoubleSide}
-          metalness={0.5}
-          roughness={0.7}
-        />
-      </mesh>
-
-      <Sparkles
-        position={[0, 0, -5]}
-        count={50}
-        speed={0.1}
-        opacity={0.6}
-        color="#3b82f6"
-        size={1.5}
-        scale={[viewport.width * 1.5, viewport.height * 1.5, 2]}
-      />
-
-      <FloatingTechIcons />
-    </>
-  );
-};
+// ── Static data (outside component) ─────────────────────────────────────────
 
 const SERVICES = [
   {
-    id: 1,
     title: "Full-Stack Web Development",
-    description:
-      "End-to-end web application development using the MERN stack (MongoDB, Express, React, Node.js)",
-    icon: <Code className="w-8 h-8" />,
-    color: "#3b82f6",
+    description: "End-to-end web applications using the MERN stack with clean architecture and scalable design.",
+    icon: Code,
+    hex:    "#06b6d4",
+    topBar: "linear-gradient(to right,#06b6d4,#0891b2)",
+    iconBg: "rgba(6,182,212,0.12)",
+    border: "border-cyan-500/20",
+    borderHover: "group-hover:border-cyan-400/40",
+    glow:   "rgba(6,182,212,0.2)",
     features: [
       "Custom web application development",
-      "RESTful API design and implementation",
-      "Database architecture and optimization",
-      "Authentication and authorization systems",
+      "RESTful API design & implementation",
+      "Database architecture & optimization",
+      "Authentication & authorization systems",
       "Third-party API integrations",
     ],
-    technologies: [
-      { name: "MongoDB", shortName: "M", color: "#4DB33D" },
-      { name: "Express.js", shortName: "E", color: "#000000" },
-      { name: "React", shortName: "R", color: "#61DAFB" },
-      { name: "Node.js", shortName: "N", color: "#339933" },
-      { name: "JavaScript", shortName: "JS", color: "#F7DF1E" },
-    ],
+    technologies: ["MongoDB", "Express.js", "React", "Node.js", "JavaScript"],
   },
   {
-    id: 2,
     title: "Frontend Development",
-    description:
-      "Interactive and responsive user interfaces built with React.js",
-    icon: <Smartphone className="w-8 h-8" />,
-    color: "#61DAFB",
+    description: "Interactive, responsive UIs with React.js, Next.js, and modern design systems.",
+    icon: Smartphone,
+    hex:    "#3b82f6",
+    topBar: "linear-gradient(to right,#3b82f6,#2563eb)",
+    iconBg: "rgba(59,130,246,0.12)",
+    border: "border-blue-500/20",
+    borderHover: "group-hover:border-blue-400/40",
+    glow:   "rgba(59,130,246,0.2)",
     features: [
-      "React component development",
-      "State management with Redux/Context",
-      "Responsive UI/UX design",
-      "Performance optimization",
+      "React & Next.js component development",
+      "State management (Redux / Zustand)",
+      "Responsive UI/UX implementation",
+      "Performance optimization & lazy loading",
       "Progressive Web Apps (PWAs)",
     ],
-    technologies: [
-      { name: "React", shortName: "R", color: "#61DAFB" },
-      { name: "JavaScript", shortName: "JS", color: "#F7DF1E" },
-      { name: "HTML5", shortName: "H5", color: "#E34F26" },
-      { name: "CSS3", shortName: "C3", color: "#1572B6" },
-      { name: "Redux", shortName: "RX", color: "#764ABC" },
-      { name: "TypeScript", shortName: "TS", color: "#3178C6" },
-    ],
+    technologies: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Redux"],
   },
   {
-    id: 3,
-    title: "Backend Development",
-    description: "Scalable server-side applications with Node.js and Express",
-    icon: <Server className="w-8 h-8" />,
-    color: "#339933",
+    title: "React Native Apps",
+    description: "Cross-platform mobile applications for iOS and Android with native performance.",
+    icon: Smartphone,
+    hex:    "#a855f7",
+    topBar: "linear-gradient(to right,#a855f7,#7c3aed)",
+    iconBg: "rgba(168,85,247,0.12)",
+    border: "border-purple-500/20",
+    borderHover: "group-hover:border-purple-400/40",
+    glow:   "rgba(168,85,247,0.2)",
     features: [
-      "RESTful API development",
-      "Authentication systems (JWT, OAuth)",
-      "Server-side rendering",
-      "Middleware development",
+      "Cross-platform iOS & Android apps",
+      "Role-based access control",
+      "Real-time data sync & push notifications",
+      "Offline-first architecture",
+      "App Store & Play Store deployment",
+    ],
+    technologies: ["React Native", "Redux", "REST APIs", "Expo", "Firebase"],
+  },
+  {
+    title: "Backend & API Development",
+    description: "Scalable server-side applications with Node.js, Express, real-time WebSocket support.",
+    icon: Server,
+    hex:    "#f97316",
+    topBar: "linear-gradient(to right,#f97316,#ea580c)",
+    iconBg: "rgba(249,115,22,0.12)",
+    border: "border-orange-500/20",
+    borderHover: "group-hover:border-orange-400/40",
+    glow:   "rgba(249,115,22,0.2)",
+    features: [
+      "RESTful & GraphQL API development",
+      "JWT / OAuth authentication systems",
+      "WebSocket & Socket.IO integration",
+      "Middleware & rate-limiting",
       "API documentation (Swagger)",
     ],
-    technologies: [
-      { name: "Node.js", shortName: "N", color: "#339933" },
-      { name: "Express.js", shortName: "E", color: "#000000" },
-      { name: "MongoDB", shortName: "M", color: "#4DB33D" },
-      { name: "REST", shortName: "REST", color: "#FF6B6B" },
-      { name: "JWT", shortName: "JWT", color: "#F7DF1E" },
-      { name: "GraphQL", shortName: "GQL", color: "#E10098" },
-    ],
+    technologies: ["Node.js", "Express.js", "Socket.IO", "JWT", "GraphQL"],
   },
   {
-    id: 4,
-    title: "API Development",
-    description: "Custom API development and integration services",
-    icon: <Cpu className="w-8 h-8" />,
-    color: "#f59e0b",
-    features: [
-      "Custom API development",
-      "Third-party API integration",
-      "Webhook implementation",
-      "GraphQL API development",
-      "API security and rate limiting",
-    ],
-    technologies: [
-      { name: "REST", shortName: "REST", color: "#FF6B6B" },
-      { name: "GraphQL", shortName: "GQL", color: "#E10098" },
-      { name: "Express.js", shortName: "E", color: "#000000" },
-      { name: "Postman", shortName: "PM", color: "#FF6C37" },
-      { name: "Swagger", shortName: "SW", color: "#85EA2D" },
-      { name: "JWT", shortName: "JWT", color: "#F7DF1E" },
-    ],
-  },
-  {
-    id: 5,
     title: "Database Solutions",
-    description:
-      "MongoDB database design, implementation, and optimization for your applications",
-    icon: <Database className="w-8 h-8" />,
-    color: "#4DB33D",
+    description: "MongoDB and SQL database design, modeling, optimization, and migration services.",
+    icon: Database,
+    hex:    "#10b981",
+    topBar: "linear-gradient(to right,#10b981,#059669)",
+    iconBg: "rgba(16,185,129,0.12)",
+    border: "border-emerald-500/20",
+    borderHover: "group-hover:border-emerald-400/40",
+    glow:   "rgba(16,185,129,0.2)",
     features: [
-      "NoSQL database design",
-      "Data modeling and schema design",
-      "Query optimization",
+      "NoSQL & SQL schema design",
+      "Mongoose / Sequelize ORM setup",
+      "Query optimization & indexing",
       "Data migration services",
       "Database security implementation",
     ],
-    technologies: [
-      { name: "MongoDB", shortName: "M", color: "#4DB33D" },
-      { name: "Mongoose", shortName: "MG", color: "#880000" },
-      { name: "Redis", shortName: "RD", color: "#DC382D" },
-      { name: "Firebase", shortName: "FB", color: "#FFCA28" },
-      { name: "SQL", shortName: "SQL", color: "#00758F" },
-    ],
+    technologies: ["MongoDB", "MySQL", "PostgreSQL", "Mongoose", "Redis"],
   },
   {
-    id: 6,
     title: "Deployment & DevOps",
-    description: "Application deployment and cloud infrastructure setup",
-    icon: <Globe className="w-8 h-8" />,
-    color: "#8b5cf6",
+    description: "Cloud deployment, CI/CD pipelines, and infrastructure setup for production-ready apps.",
+    icon: Globe,
+    hex:    "#8b5cf6",
+    topBar: "linear-gradient(to right,#8b5cf6,#7c3aed)",
+    iconBg: "rgba(139,92,246,0.12)",
+    border: "border-violet-500/20",
+    borderHover: "group-hover:border-violet-400/40",
+    glow:   "rgba(139,92,246,0.2)",
     features: [
       "CI/CD pipeline setup",
       "Docker containerization",
-      "Cloud deployment (AWS, GCP, Azure)",
+      "Cloud deployment (AWS, Vercel, Render)",
       "Serverless architecture",
-      "Performance monitoring",
+      "Performance monitoring & logging",
     ],
-    technologies: [
-      { name: "Docker", shortName: "DK", color: "#2496ED" },
-      { name: "AWS", shortName: "AWS", color: "#FF9900" },
-      { name: "GitHub Actions", shortName: "GH", color: "#2088FF" },
-      { name: "NGINX", shortName: "NX", color: "#009639" },
-      { name: "Kubernetes", shortName: "K8", color: "#326CE5" },
-      { name: "Vercel", shortName: "VC", color: "#000000" },
-    ],
+    technologies: ["Docker", "AWS", "GitHub Actions", "Vercel", "NGINX"],
   },
 ];
 
+// ── Service card ─────────────────────────────────────────────────────────────
+
+const ServiceCard = ({ svc, index }) => {
+  const Icon = svc.icon;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, delay: index * 0.07 }}
+      viewport={{ once: true }}
+      whileHover={{ y: -6, transition: { duration: 0.22 } }}
+      className={`relative bg-[#0d0d1a]/85 backdrop-blur-sm rounded-2xl overflow-hidden border ${svc.border} ${svc.borderHover} transition-colors duration-300 group flex flex-col`}
+      style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.5)" }}
+    >
+      {/* Hover glow */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
+        style={{ background: `radial-gradient(ellipse at 50% 0%,${svc.glow},transparent 65%)` }}
+      />
+
+      {/* Top accent bar */}
+      <div className="h-[3px] w-full flex-shrink-0" style={{ background: svc.topBar }} />
+
+      <div className="p-6 flex flex-col flex-1">
+        {/* Icon + Title */}
+        <div className="flex items-start gap-4 mb-4">
+          <motion.div
+            whileHover={{ scale: 1.12, rotate: 6 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+            style={{ background: svc.iconBg, border: `1px solid ${svc.hex}30`, boxShadow: `0 0 14px ${svc.glow}` }}
+          >
+            <Icon className="w-6 h-6" style={{ color: svc.hex }} />
+          </motion.div>
+          <div>
+            <h3 className="text-xl font-bold text-white leading-tight">{svc.title}</h3>
+            <p className="text-sm text-white/50 mt-1.5 leading-relaxed">{svc.description}</p>
+          </div>
+        </div>
+
+        {/* Features */}
+        <ul className="space-y-2 mb-5 flex-1">
+          {svc.features.map((f, i) => (
+            <motion.li
+              key={i}
+              initial={{ opacity: 0, x: -12 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.07 + i * 0.05 }}
+              viewport={{ once: true }}
+              className="flex items-start gap-2"
+            >
+              <CheckCircle2
+                className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"
+                style={{ color: svc.hex, opacity: 0.7 }}
+              />
+              <span className="text-sm text-white/70 leading-snug">{f}</span>
+            </motion.li>
+          ))}
+        </ul>
+
+        {/* Tech pills */}
+        <div className="pt-4 border-t border-white/[0.06]">
+          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-2.5">Tech Stack</p>
+          <div className="flex flex-wrap gap-1.5">
+            {svc.technologies.map((tech, i) => (
+              <motion.span
+                key={i}
+                whileHover={{ y: -2 }}
+                className="text-xs font-semibold px-2.5 py-1 rounded-full border"
+                style={{ color: svc.hex, borderColor: `${svc.hex}35`, background: `${svc.hex}10` }}
+              >
+                {tech}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 const Services = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const [canvasError, setCanvasError] = useState(false);
-  const canvasRef = useRef();
+  const mountRef = useRef(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+    if (!mountRef.current) return;
+    const mountNode = mountRef.current;
+
+    const scene    = new THREE.Scene();
+    const camera   = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    mountNode.appendChild(renderer.domElement);
+
+    // Stars
+    const starGeo = new THREE.BufferGeometry();
+    const sv = [];
+    for (let i = 0; i < 2000; i++)
+      sv.push((Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000);
+    starGeo.setAttribute("position", new THREE.Float32BufferAttribute(sv, 3));
+    const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending });
+    scene.add(new THREE.Points(starGeo, starMat));
+
+    // Nebulae
+    const mkNebula = (color, pos, s = 1) => {
+      const g = new THREE.SphereGeometry(55, 16, 16);
+      const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.position.set(...pos); mesh.scale.setScalar(s);
+      scene.add(mesh);
+      return { g, m };
     };
-    handleResize();
-    window.addEventListener("resize", handleResize);
+    const n1 = mkNebula(0x4a00e0, [25, 5, -130]);
+    const n2 = mkNebula(0x00b4d8, [-35, -15, -170], 0.72);
 
-    // Handle WebGL context events
-    const canvas = canvasRef.current?.querySelector("canvas");
-    if (canvas) {
-      const handleContextLost = (event) => {
-        event.preventDefault();
-        console.warn("WebGL context lost. Attempting to recover...");
-        setCanvasError(true);
-      };
-
-      const handleContextRestored = () => {
-        console.log("WebGL context restored");
-        setCanvasError(false);
-      };
-
-      canvas.addEventListener("webglcontextlost", handleContextLost);
-      canvas.addEventListener("webglcontextrestored", handleContextRestored);
-
-      return () => {
-        window.removeEventListener("resize", handleResize);
-        canvas.removeEventListener("webglcontextlost", handleContextLost);
-        canvas.removeEventListener(
-          "webglcontextrestored",
-          handleContextRestored
-        );
-      };
+    // Floating particles
+    const ptCount = 60;
+    const ptPos = new Float32Array(ptCount * 3);
+    const ptVel = [];
+    for (let i = 0; i < ptCount; i++) {
+      ptPos[i * 3]     = (Math.random() - 0.5) * 18;
+      ptPos[i * 3 + 1] = (Math.random() - 0.5) * 12;
+      ptPos[i * 3 + 2] = (Math.random() - 0.5) * 6;
+      ptVel.push({ x: (Math.random() - 0.5) * 0.007, y: (Math.random() - 0.5) * 0.007 });
     }
+    const ptGeo = new THREE.BufferGeometry();
+    ptGeo.setAttribute("position", new THREE.BufferAttribute(ptPos, 3));
+    const ptMat = new THREE.PointsMaterial({ size: 0.06, color: 0xa855f7, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending });
+    scene.add(new THREE.Points(ptGeo, ptMat));
+
+    // Torus rings (service orbit theme)
+    const rings = [
+      { r: 3.5, tube: 0.018, color: 0x06b6d4, opacity: 0.18, rx: Math.PI / 4, ry: 0.2 },
+      { r: 5.2, tube: 0.012, color: 0xa855f7, opacity: 0.13, rx: Math.PI / 6, ry: -0.3 },
+      { r: 2.2, tube: 0.014, color: 0xf97316, opacity: 0.14, rx: Math.PI / 3, ry: 0.5 },
+    ];
+    const ringMeshes = rings.map(({ r, tube, color, opacity, rx, ry }) => {
+      const g = new THREE.TorusGeometry(r, tube, 8, 80);
+      const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.rotation.x = rx;
+      mesh.rotation.y = ry;
+      scene.add(mesh);
+      return mesh;
+    });
+
+    camera.position.z = 10;
+
+    let raf;
+    let running = false;
+
+    const animate = () => {
+      raf = requestAnimationFrame(animate);
+      const pos = ptGeo.attributes.position.array;
+      for (let i = 0; i < ptCount; i++) {
+        pos[i * 3]     += ptVel[i].x;
+        pos[i * 3 + 1] += ptVel[i].y;
+        if (Math.abs(pos[i * 3])     > 9)  ptVel[i].x *= -1;
+        if (Math.abs(pos[i * 3 + 1]) > 6)  ptVel[i].y *= -1;
+      }
+      ptGeo.attributes.position.needsUpdate = true;
+      ringMeshes[0].rotation.z += 0.003;
+      ringMeshes[0].rotation.y += 0.001;
+      ringMeshes[1].rotation.y += 0.004;
+      ringMeshes[1].rotation.z -= 0.002;
+      ringMeshes[2].rotation.x += 0.003;
+      ringMeshes[2].rotation.z += 0.005;
+      renderer.render(scene, camera);
+    };
+
+    const start = () => { if (!running) { running = true; animate(); } };
+    const stop  = () => { if (running)  { running = false; cancelAnimationFrame(raf); } };
+    const onVisibility = () => document.hidden ? stop() : start();
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    start();
+    window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      stop();
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
+      if (mountNode.contains(renderer.domElement)) mountNode.removeChild(renderer.domElement);
+      scene.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          Array.isArray(o.material) ? o.material.forEach(m => m.dispose()) : o.material.dispose();
+        }
+      });
+      starGeo.dispose(); starMat.dispose();
+      ptGeo.dispose(); ptMat.dispose();
+      n1.g.dispose(); n1.m.dispose();
+      n2.g.dispose(); n2.m.dispose();
+      renderer.dispose();
+    };
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
-      {/* 3D Background Canvas */}
-      <div className="fixed inset-0 -z-10" ref={canvasRef}>
-        <ErrorBoundary>
-          <Canvas
-            camera={{ position: [0, 0, 10], fov: 50 }}
-            gl={{
-              antialias: true,
-              powerPreference: "high-performance",
-              preserveDrawingBuffer: true,
-            }}
-          >
-            <Suspense fallback={null}>
-              <ambientLight intensity={0.5} />
-              <pointLight position={[10, 10, 10]} intensity={1} />
-              <pointLight
-                position={[-10, -10, -10]}
-                color="#f59e0b"
-                intensity={0.5}
-              />
-              {!canvasError && <ServicesBackground />}
-              <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                enableRotate={!isMobile}
-              />
-            </Suspense>
-          </Canvas>
-        </ErrorBoundary>
-      </div>
+    <div className="min-h-screen overflow-hidden relative" style={{ background: "linear-gradient(135deg,#0d0d1a 0%,#0f0c29 50%,#0d0d1a 100%)" }}>
+      {/* Three.js canvas */}
+      <div ref={mountRef} className="fixed inset-0 pointer-events-none z-0" />
+      <div className="fixed inset-0 pointer-events-none z-[1] bg-[#0d0d1a]/45" />
 
-      {/* Show fallback if canvas fails */}
-      {canvasError && (
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-900 to-gray-800 -z-10"></div>
-      )}
+      <div className="relative z-10 pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
 
-      <div className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
+        {/* ── Header ── */}
+        <div className="text-center mb-16 relative">
+          <div className="absolute -top-20 -left-20 w-64 h-64 bg-cyan-500/6 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-32 right-0  w-80 h-80 bg-purple-500/6 rounded-full blur-3xl pointer-events-none" />
+
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, type: "spring" }}
             className="inline-block mb-6 relative"
           >
-            <div className="absolute -inset-4 bg-blue-500/20 rounded-full blur-xl"></div>
-            <div className="relative px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-medium shadow-lg">
+            <div className="absolute -inset-4 bg-blue-500/20 rounded-full blur-xl" />
+            <div className="relative px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-medium shadow-lg flex items-center gap-2">
+              <Sparkles className="w-5 h-5" />
               MERN Stack Services
             </div>
           </motion.div>
@@ -453,12 +361,14 @@ const Services = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl font-bold text-white sm:text-6xl mb-6"
+            className="text-5xl sm:text-6xl font-bold text-white mb-6 relative"
           >
+            <span className="absolute -left-8 top-1/2 -translate-y-1/2 text-cyan-400/20 text-8xl select-none">{"</>"}</span>
             My{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
               Services
             </span>
+            <span className="absolute -right-8 top-1/2 -translate-y-1/2 text-blue-400/20 text-8xl select-none">{"{}"}</span>
           </motion.h1>
 
           <motion.p
@@ -467,153 +377,134 @@ const Services = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-xl text-gray-300 max-w-3xl mx-auto"
           >
-            Comprehensive MERN stack solutions tailored to your business needs
+            Comprehensive development solutions tailored to your business needs
           </motion.p>
+
+          {/* Stats strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="flex justify-center gap-8 mt-10"
+          >
+            {[
+              { value: "15+", label: "Projects Delivered" },
+              { value: "3+",  label: "Years Experience" },
+              { value: "6",   label: "Service Areas" },
+            ].map((s, i) => (
+              <div key={i} className="text-center">
+                <p className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">{s.value}</p>
+                <p className="text-sm text-white/40 mt-1">{s.label}</p>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* ── Services grid ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+          {SERVICES.map((svc, i) => (
+            <ServiceCard key={svc.title} svc={svc} index={i} />
+          ))}
+        </div>
+
+        {/* ── Process section ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <div className="text-center mb-10">
+            <h2 className="text-4xl font-bold text-white mb-2">How I Work</h2>
+            <div className="h-[2px] w-16 mx-auto rounded-full" style={{ background: "linear-gradient(to right,#06b6d4,#a855f7)" }} />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { step: "01", title: "Discovery",    desc: "Understand your requirements, goals, and technical constraints.",   hex: "#06b6d4" },
+              { step: "02", title: "Planning",     desc: "Architecture design, tech stack selection, and sprint planning.",   hex: "#a855f7" },
+              { step: "03", title: "Development",  desc: "Agile development with regular updates and code reviews.",          hex: "#f97316" },
+              { step: "04", title: "Delivery",     desc: "Testing, deployment, documentation, and post-launch support.",     hex: "#10b981" },
+            ].map((p, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                viewport={{ once: true }}
+                className="relative bg-[#0d0d1a]/80 backdrop-blur-sm rounded-2xl p-5 border border-white/[0.07] overflow-hidden group hover:border-white/15 transition-colors duration-300"
+                style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.4)" }}
+              >
+                <div
+                  className="absolute top-0 left-0 right-0 h-[3px]"
+                  style={{ background: `linear-gradient(to right,${p.hex},${p.hex}88)` }}
+                />
+                <span
+                  className="inline-flex items-center justify-center min-w-[78px] px-4 py-2 rounded-2xl text-5xl font-black mb-4 leading-none border shadow-lg"
+                  style={{
+                    color: p.hex,
+                    background: `${p.hex}18`,
+                    borderColor: `${p.hex}40`,
+                    boxShadow: `0 0 24px ${p.hex}18`,
+                  }}
+                >
+                  {p.step}
+                </span>
+                <h4 className="text-xl font-bold text-white mb-2.5">{p.title}</h4>
+                <p className="text-base text-white/65 leading-relaxed">{p.desc}</p>
+                <div
+                  className="absolute bottom-0 right-0 w-16 h-16 rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-400 pointer-events-none"
+                  style={{ background: p.hex }}
+                />
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
-        {/* Services Tabs (Mobile) */}
-        {isMobile && (
-          <div className="mb-8">
-            <div className="flex overflow-x-auto pb-2 space-x-2">
-              {SERVICES.map((service, index) => (
-                <motion.button
-                  key={service.id}
-                  onClick={() => setActiveTab(index)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`px-4 py-2 rounded-full whitespace-nowrap ${
-                    activeTab === index
-                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
-                      : "bg-gray-700 text-gray-300"
-                  }`}
+        {/* ── Footer CTA ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center pb-16 relative"
+        >
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-64 h-64 bg-cyan-500/8 rounded-full blur-3xl pointer-events-none" />
+
+          {/* CTA card */}
+          <div
+            className="relative max-w-2xl mx-auto rounded-2xl overflow-hidden border border-white/[0.07] p-10"
+            style={{ background: "linear-gradient(135deg,rgba(6,182,212,0.06),rgba(168,85,247,0.06))", boxShadow: "0 0 60px rgba(6,182,212,0.08)" }}
+          >
+            <div className="h-[2px] absolute top-0 left-0 right-0" style={{ background: "linear-gradient(to right,#06b6d4,#a855f7,#3b82f6)" }} />
+            <h3 className="text-2xl font-bold text-white mb-3">Ready to start your project?</h3>
+            <p className="text-white/55 text-base mb-7">Let's discuss your requirements and build something amazing together.</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 px-7 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/30 transition-all"
                 >
-                  {service.title.split(" ")[0]}
-                </motion.button>
-              ))}
+                  <Sparkles className="w-4 h-4" />
+                  Hire Me
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <a
+                  href="mailto:prakashmanig000@gmail.com"
+                  className="inline-flex items-center gap-2 px-7 py-3 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.1] text-white rounded-xl font-semibold transition-all"
+                >
+                  Get in Touch
+                </a>
+              </motion.div>
             </div>
           </div>
-        )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Services List (Desktop) */}
-          {!isMobile && (
-            <div className="space-y-4">
-              {SERVICES.map((service, index) => (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  onClick={() => setActiveTab(index)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`p-6 rounded-xl cursor-pointer transition-all ${
-                    activeTab === index
-                      ? "bg-gradient-to-r from-cyan-500/20 to-blue-600/20 border border-cyan-500/30"
-                      : "bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700"
-                  }`}
-                >
-                  <div className="flex items-center mb-4">
-                    <div
-                      className="p-3 rounded-lg mr-4"
-                      style={{ backgroundColor: `${service.color}20` }}
-                    >
-                      {service.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-white">
-                      {service.title}
-                    </h3>
-                  </div>
-                  <p className="text-gray-300">{service.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          )}
-
-          {/* Service Details */}
-          <div className="lg:col-span-2">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative h-full"
-            >
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl blur opacity-20"></div>
-              <div className="relative bg-gray-800/80 backdrop-blur-sm p-8 rounded-xl border border-gray-700 h-full">
-                <div className="flex items-center mb-6">
-                  <div
-                    className="p-3 rounded-lg mr-4"
-                    style={{
-                      backgroundColor: `${SERVICES[activeTab].color}20`,
-                    }}
-                  >
-                    {SERVICES[activeTab].icon}
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-white">
-                      {SERVICES[activeTab].title}
-                    </h2>
-                    <p className="text-gray-300">
-                      {SERVICES[activeTab].description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-white mb-4">
-                    Key Features
-                  </h3>
-                  <ul className="space-y-3">
-                    {SERVICES[activeTab].features.map((feature, index) => (
-                      <motion.li
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                        className="flex items-start"
-                      >
-                        <div className="flex-shrink-0 mt-1 mr-3">
-                          <div
-                            className="w-2 h-2 rounded-full"
-                            style={{
-                              backgroundColor: SERVICES[activeTab].color,
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-gray-300">{feature}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mt-8">
-                  <h3 className="text-xl font-semibold text-white mb-4">
-                    Technologies Used
-                  </h3>
-                  <div className="flex flex-wrap gap-4">
-                    {SERVICES[activeTab].technologies?.map((tech, index) => (
-                      <motion.div
-                        key={index}
-                        whileHover={{ y: -5 }}
-                        className="flex items-center px-4 py-2 bg-gray-700/50 rounded-lg"
-                        style={{ borderLeft: `3px solid ${tech.color}` }}
-                      >
-                        <span
-                          className="mr-2 font-bold"
-                          style={{ color: tech.color }}
-                        >
-                          {tech.shortName}
-                        </span>
-                        <span className="text-white">{tech.name}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+          <div className="mt-8 text-gray-400 text-sm flex items-center justify-center gap-2">
+            <span>✦</span> Building the web, one project at a time <span>✦</span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

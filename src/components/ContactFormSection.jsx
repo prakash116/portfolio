@@ -1,135 +1,35 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Send, User, MessageSquare, CheckCircle, Loader2 } from 'lucide-react';
-import * as THREE from 'three';
 
 const ContactFormSection = () => {
-  const [formData, setFormData]       = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [focused, setFocused]         = useState(null);
+  const [focused, setFocused] = useState(null);
 
-  const canvasRef    = useRef(null);
-  const rendererRef  = useRef(null);
-  const animationRef = useRef(null);
-
-  // ── Three.js particle ring background ──────────────────────────────────────
-  useEffect(() => {
-    if (!canvasRef.current) return;
-
-    const w = canvasRef.current.clientWidth;
-    const h = canvasRef.current.clientHeight;
-
-    const scene  = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
-    camera.position.z = 8;
-
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'high-performance' });
-    renderer.setSize(w, h);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    canvasRef.current.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
-
-    // Particle field
-    const count    = 70;
-    const positions = new Float32Array(count * 3);
-    const velocities = [];
-    for (let i = 0; i < count; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * 14;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 4;
-      velocities.push({ x: (Math.random() - 0.5) * 0.007, y: (Math.random() - 0.5) * 0.007 });
-    }
-    const ptGeo = new THREE.BufferGeometry();
-    ptGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const ptMat = new THREE.PointsMaterial({ size: 0.055, color: 0x22d3ee, transparent: true, opacity: 0.65 });
-    const points = new THREE.Points(ptGeo, ptMat);
-    scene.add(points);
-
-    // Rotating rings
-    const ring1Geo = new THREE.TorusGeometry(2.2, 0.018, 8, 64);
-    const ring1Mat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.18 });
-    const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
-    scene.add(ring1);
-
-    const ring2Geo = new THREE.TorusGeometry(3.2, 0.01, 8, 80);
-    const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.1 });
-    const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
-    ring2.rotation.x = Math.PI / 3;
-    scene.add(ring2);
-
-    const ring3Geo = new THREE.TorusGeometry(1.4, 0.012, 8, 48);
-    const ring3Mat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.12 });
-    const ring3 = new THREE.Mesh(ring3Geo, ring3Mat);
-    ring3.rotation.y = Math.PI / 4;
-    scene.add(ring3);
-
-    const animate = () => {
-      animationRef.current = requestAnimationFrame(animate);
-
-      const pos = ptGeo.attributes.position.array;
-      for (let i = 0; i < count; i++) {
-        pos[i * 3]     += velocities[i].x;
-        pos[i * 3 + 1] += velocities[i].y;
-        if (Math.abs(pos[i * 3])     > 7) velocities[i].x *= -1;
-        if (Math.abs(pos[i * 3 + 1]) > 5) velocities[i].y *= -1;
-      }
-      ptGeo.attributes.position.needsUpdate = true;
-
-      ring1.rotation.z += 0.003;
-      ring1.rotation.x += 0.001;
-      ring2.rotation.y += 0.004;
-      ring2.rotation.z += 0.001;
-      ring3.rotation.x += 0.002;
-      ring3.rotation.z -= 0.003;
-
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    const onResize = () => {
-      if (!canvasRef.current) return;
-      const nw = canvasRef.current.clientWidth;
-      const nh = canvasRef.current.clientHeight;
-      camera.aspect = nw / nh;
-      camera.updateProjectionMatrix();
-      renderer.setSize(nw, nh);
-    };
-    window.addEventListener('resize', onResize);
-
-    return () => {
-      cancelAnimationFrame(animationRef.current);
-      window.removeEventListener('resize', onResize);
-      [ptGeo, ring1Geo, ring2Geo, ring3Geo].forEach(g => g.dispose());
-      [ptMat, ring1Mat, ring2Mat, ring3Mat].forEach(m => m.dispose());
-      if (canvasRef.current?.contains(renderer.domElement))
-        canvasRef.current.removeChild(renderer.domElement);
-      renderer.dispose();
-    };
-  }, []);
-
-  // ── Handlers ───────────────────────────────────────────────────────────────
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }, []);
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    window.setTimeout(() => {
       setIsSubmitting(false);
       setSubmitSuccess(true);
       setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setSubmitSuccess(false), 4000);
+
+      window.setTimeout(() => setSubmitSuccess(false), 4000);
     }, 1500);
   }, []);
 
-  // Shared input style
   const inputStyle = (id) => ({
-    background:  focused === id ? 'rgba(34,211,238,0.05)' : 'rgba(255,255,255,0.03)',
-    borderColor: focused === id ? 'rgba(34,211,238,0.4)'  : 'rgba(255,255,255,0.08)',
-    boxShadow:   focused === id ? '0 0 0 3px rgba(34,211,238,0.08)' : 'none',
+    background: focused === id ? 'rgba(34,211,238,0.05)' : 'rgba(255,255,255,0.03)',
+    borderColor: focused === id ? 'rgba(34,211,238,0.4)' : 'rgba(255,255,255,0.08)',
+    boxShadow: focused === id ? '0 0 0 3px rgba(34,211,238,0.08)' : 'none',
   });
 
   return (
@@ -138,37 +38,29 @@ const ContactFormSection = () => {
       whileInView={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
-      className="relative rounded-2xl overflow-hidden"
+      className="relative rounded-2xl overflow-hidden h-full"
     >
-      {/* Three.js background */}
-      <div ref={canvasRef} className="absolute inset-0 z-0 opacity-35" />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.10),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.08),_transparent_24%),linear-gradient(135deg,_rgba(13,13,26,0.96),_rgba(15,12,41,0.92),_rgba(13,13,26,0.96))]" />
 
-      {/* Dark overlay */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-br from-[#0d0d1a]/92 via-[#0f0c29]/88 to-[#0d0d1a]/92" />
-
-      {/* Card content */}
       <div
-        className="relative z-10 p-6 md:p-8 border border-white/[0.07] rounded-2xl"
+        className="relative z-10 p-6 md:p-8 border border-white/[0.07] rounded-2xl backdrop-blur-sm h-full flex flex-col"
         style={{ boxShadow: '0 0 50px rgba(34,211,238,0.05), inset 0 1px 0 rgba(255,255,255,0.04)' }}
       >
-        {/* Header */}
         <div className="flex items-center gap-3 mb-7">
           <motion.div
             animate={{ rotate: [0, 8, -8, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-            className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0"
+            className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 shadow-[0_0_24px_rgba(34,211,238,0.12)]"
           >
             <Mail className="w-5 h-5 text-cyan-400" />
           </motion.div>
           <div>
             <h2 className="text-xl font-bold text-white leading-tight">Send Me a Message</h2>
-            <p className="text-xs text-white/35 mt-0.5">I'll reply within 24 hours</p>
+            <p className="text-xs text-white/35 mt-0.5">I&apos;ll reply within 24 hours</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-
-          {/* Name */}
+        <form onSubmit={handleSubmit} className="space-y-4 flex-1 flex flex-col">
           <div>
             <label htmlFor="name" className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-1.5">
               Your Name
@@ -191,7 +83,6 @@ const ContactFormSection = () => {
             </div>
           </div>
 
-          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-1.5">
               Email Address
@@ -214,7 +105,6 @@ const ContactFormSection = () => {
             </div>
           </div>
 
-          {/* Message */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <label htmlFor="message" className="block text-xs font-semibold text-white/40 uppercase tracking-wider">
@@ -243,13 +133,12 @@ const ContactFormSection = () => {
             </div>
           </div>
 
-          {/* Submit */}
           <motion.button
             type="submit"
             disabled={isSubmitting || submitSuccess}
-            whileHover={!isSubmitting && !submitSuccess ? { scale: 1.02, boxShadow: '0 0 30px rgba(34,211,238,0.38)' } : {}}
+            whileHover={!isSubmitting && !submitSuccess ? { scale: 1.02, boxShadow: '0 0 30px rgba(34,211,238,0.30)' } : {}}
             whileTap={!isSubmitting && !submitSuccess ? { scale: 0.98 } : {}}
-            className="w-full flex justify-center items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm text-white transition-all duration-300"
+            className="w-full flex justify-center items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm text-white transition-all duration-300 mt-auto"
             style={{
               background: submitSuccess
                 ? 'linear-gradient(135deg, #10b981, #059669)'
@@ -261,27 +150,38 @@ const ContactFormSection = () => {
           >
             <AnimatePresence mode="wait" initial={false}>
               {isSubmitting ? (
-                <motion.span key="loading"
-                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-                  className="flex items-center gap-2">
+                <motion.span
+                  key="loading"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="flex items-center gap-2"
+                >
                   <Loader2 className="w-4 h-4 animate-spin" /> Sending...
                 </motion.span>
               ) : submitSuccess ? (
-                <motion.span key="success"
-                  initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-                  className="flex items-center gap-2">
+                <motion.span
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center gap-2"
+                >
                   <CheckCircle className="w-4 h-4" /> Message Sent!
                 </motion.span>
               ) : (
-                <motion.span key="idle"
-                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-                  className="flex items-center gap-2">
+                <motion.span
+                  key="idle"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="flex items-center gap-2"
+                >
                   <Send className="w-4 h-4" /> Send Message
                 </motion.span>
               )}
             </AnimatePresence>
           </motion.button>
-
         </form>
       </div>
     </motion.div>

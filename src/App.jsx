@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import AnimatedFooter from "./components/Footer";
 import { Route, Routes, useLocation } from "react-router-dom";
-import HeroSection from "./components/pages/Hero";
-import AboutPage from "./components/pages/AboutMe";
-import ProjectsPage from "./components/pages/ProjectPage";
-import SkillsPage from "./components/pages/Skills";
-import ContactUs from "./components/pages/ContactUs";
 import { motion, AnimatePresence } from "framer-motion";
-import Landing from "./components/pages/Landing";
-import Services from "./components/pages/Services";
 import { Toaster } from "react-hot-toast";
+
+const Landing = lazy(() => import("./components/pages/Landing"));
+const HeroSection = lazy(() => import("./components/pages/Hero"));
+const AboutPage = lazy(() => import("./components/pages/AboutMe"));
+const ProjectsPage = lazy(() => import("./components/pages/ProjectPage"));
+const SkillsPage = lazy(() => import("./components/pages/Skills"));
+const Services = lazy(() => import("./components/pages/Services"));
+const ContactUs = lazy(() => import("./components/pages/ContactUs"));
 
 // Loading component with Framer Motion animations
 const LoadingScreen = () => {
@@ -51,6 +52,15 @@ const LoadingScreen = () => {
     </motion.div>
   );
 };
+
+const RouteFallback = () => (
+  <div className="flex min-h-[60vh] items-center justify-center px-4">
+    <div className="flex items-center gap-3 rounded-full border border-white/10 bg-slate-900/70 px-5 py-3 text-sm text-white/80 backdrop-blur-sm">
+      <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-cyan-400" />
+      Loading page...
+    </div>
+  </div>
+);
 
 // Page transition component with scroll to top
 const PageLayout = ({ children }) => {
@@ -94,66 +104,68 @@ function App() {
       <Navbar />
 
       <div className="pt-16 min-h-screen">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route
-              path="/"
-              element={
-                <PageLayout>
-                  <Landing />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/home"
-              element={
-                <PageLayout>
-                  <HeroSection />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/about"
-              element={
-                <PageLayout>
-                  <AboutPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/project"
-              element={
-                <PageLayout>
-                  <ProjectsPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/skill"
-              element={
-                <PageLayout>
-                  <SkillsPage />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/services"
-              element={
-                <PageLayout>
-                  <Services />
-                </PageLayout>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <PageLayout>
-                  <ContactUs />
-                </PageLayout>
-              }
-            />
-          </Routes>
-        </AnimatePresence>
+        <Suspense fallback={<RouteFallback />}>
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route
+                path="/"
+                element={
+                  <PageLayout>
+                    <Landing />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/home"
+                element={
+                  <PageLayout>
+                    <HeroSection />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <PageLayout>
+                    <AboutPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/project"
+                element={
+                  <PageLayout>
+                    <ProjectsPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/skill"
+                element={
+                  <PageLayout>
+                    <SkillsPage />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/services"
+                element={
+                  <PageLayout>
+                    <Services />
+                  </PageLayout>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <PageLayout>
+                    <ContactUs />
+                  </PageLayout>
+                }
+              />
+            </Routes>
+          </AnimatePresence>
+        </Suspense>
       </div>
       <AnimatedFooter />
       <div><Toaster/></div>
