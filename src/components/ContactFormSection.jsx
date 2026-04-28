@@ -1,11 +1,17 @@
 import { useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Send, User, MessageSquare, CheckCircle, Loader2 } from 'lucide-react';
+import { Mail, Send, User, MessageSquare, CheckCircle, Loader2, Phone } from 'lucide-react';
+import emailjs from '@emailjs/browser';
+
+const SERVICE_ID = 'service_p52ityf';
+const TEMPLATE_ID = 'template_j2yiuja';
+const PUBLIC_KEY = 'rk3VyQHl2omE-tVMu';
 
 const ContactFormSection = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const [focused, setFocused] = useState(null);
 
   const handleChange = useCallback((e) => {
@@ -13,18 +19,36 @@ const ContactFormSection = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   }, []);
 
-  const handleSubmit = useCallback((e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(false);
 
-    window.setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      emailjs.init({ publicKey: PUBLIC_KEY });
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        {
+          to_name: 'Prakash',
+          from_name: formData.name,
+          from_email: formData.email,
+          from_phone: formData.phone || 'Not provided',
+          from_role: '',
+          reply_to: formData.email,
+          message: formData.message,
+        }
+      );
       setSubmitSuccess(true);
-      setFormData({ name: '', email: '', message: '' });
-
+      setFormData({ name: '', email: '', phone: '', message: '' });
       window.setTimeout(() => setSubmitSuccess(false), 4000);
-    }, 1500);
-  }, []);
+    } catch {
+      setSubmitError(true);
+      window.setTimeout(() => setSubmitError(false), 4000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formData]);
 
   const inputStyle = (id) => ({
     background: focused === id ? 'rgba(34,211,238,0.05)' : 'rgba(255,255,255,0.03)',
@@ -61,6 +85,7 @@ const ContactFormSection = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 flex-1 flex flex-col">
+          {/* Name */}
           <div>
             <label htmlFor="name" className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-1.5">
               Your Name
@@ -76,13 +101,14 @@ const ContactFormSection = () => {
                 onFocus={() => setFocused('name')}
                 onBlur={() => setFocused(null)}
                 required
-                placeholder="Prakash Mani"
+                placeholder="Your full name"
                 className="w-full pl-10 pr-4 py-3 rounded-xl text-sm text-white placeholder-white/20 outline-none transition-all duration-200 border"
                 style={inputStyle('name')}
               />
             </div>
           </div>
 
+          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-1.5">
               Email Address
@@ -105,6 +131,29 @@ const ContactFormSection = () => {
             </div>
           </div>
 
+          {/* Phone */}
+          <div>
+            <label htmlFor="phone" className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-1.5">
+              Mobile
+            </label>
+            <div className="relative">
+              <Phone className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors duration-200 ${focused === 'phone' ? 'text-cyan-400' : 'text-white/20'}`} />
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                onFocus={() => setFocused('phone')}
+                onBlur={() => setFocused(null)}
+                placeholder="+91 98765 43210"
+                className="w-full pl-10 pr-4 py-3 rounded-xl text-sm text-white placeholder-white/20 outline-none transition-all duration-200 border"
+                style={inputStyle('phone')}
+              />
+            </div>
+          </div>
+
+          {/* Message */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <label htmlFor="message" className="block text-xs font-semibold text-white/40 uppercase tracking-wider">
@@ -119,7 +168,7 @@ const ContactFormSection = () => {
               <textarea
                 id="message"
                 name="message"
-                rows="5"
+                rows="4"
                 maxLength={500}
                 value={formData.message}
                 onChange={handleChange}
@@ -133,6 +182,21 @@ const ContactFormSection = () => {
             </div>
           </div>
 
+          {/* Error message */}
+          <AnimatePresence>
+            {submitError && (
+              <motion.p
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-xs text-red-400 text-center"
+              >
+                Failed to send. Please try again.
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {/* Submit Button */}
           <motion.button
             type="submit"
             disabled={isSubmitting || submitSuccess}
@@ -142,9 +206,13 @@ const ContactFormSection = () => {
             style={{
               background: submitSuccess
                 ? 'linear-gradient(135deg, #10b981, #059669)'
+                : submitError
+                ? 'linear-gradient(135deg, #ef4444, #dc2626)'
                 : 'linear-gradient(135deg, #06b6d4, #3b82f6)',
               boxShadow: submitSuccess
                 ? '0 4px 20px rgba(16,185,129,0.3)'
+                : submitError
+                ? '0 4px 20px rgba(239,68,68,0.3)'
                 : '0 4px 20px rgba(34,211,238,0.2)',
             }}
           >
@@ -168,6 +236,16 @@ const ContactFormSection = () => {
                   className="flex items-center gap-2"
                 >
                   <CheckCircle className="w-4 h-4" /> Message Sent!
+                </motion.span>
+              ) : submitError ? (
+                <motion.span
+                  key="error"
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center gap-2"
+                >
+                  Try Again
                 </motion.span>
               ) : (
                 <motion.span
