@@ -371,9 +371,9 @@ const HeroSection = () => {
             className="flex items-center gap-8 pb-8 mb-8 border-b border-white/[0.07]"
           >
             {[
-              { val: "3+",  lbl: "Years Exp" },
-              { val: "10+", lbl: "Projects" },
-              { val: "20+", lbl: "Technologies" },
+              { val: "2.5+",  lbl: "Years Exp" },
+              { val: "5+", lbl: "Projects" },
+              { val: "10+", lbl: "Technologies" },
             ].map((s, i) => (
               <div key={i}>
                 <div className="text-2xl font-bold bg-gradient-to-b from-cyan-300 to-blue-400 bg-clip-text text-transparent">{s.val}</div>

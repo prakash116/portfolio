@@ -352,7 +352,7 @@ function Footer() {
             <Heart className="h-4 w-4 fill-rose-500 text-rose-500" />
             for clean code and better user experiences.
           </p>
-          <p>v1.0.0</p>
+          <p>v3.0</p>
         </motion.div>
       </div>
     </footer>

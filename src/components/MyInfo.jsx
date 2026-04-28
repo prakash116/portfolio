@@ -39,8 +39,8 @@ const INFO_ITEMS = [
 ];
 
 const STATS = [
-  { value: "3+", label: "Years Exp." },
-  { value: "15+", label: "Projects" },
+  { value: "2.5+", label: "Years Exp." },
+  { value: "5+", label: "Projects" },
   { value: "10+", label: "Technologies" },
 ];
 
