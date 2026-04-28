@@ -1,4 +1,4 @@
-import{r as o,n as G,o as O,W,a3 as q,x as H,Y as U,O as V,a4 as J,j as e,_,H as L,v as K,A as Q,D as A,m as n,a5 as I,a6 as X,a7 as Y,e as Z,a8 as ee,a9 as te,aa as P,ab as z}from"./index-B5-CZELE.js";import{q as se,i as ae,j as re,c as oe,k as ie,S as ne,T as ce,a as le}from"./index-BPQ4qm5A.js";const p=[{id:1,name:"JavaScript",icon:e.jsx(se,{size:36}),description:"Versatile scripting language for web development — both client-side and server-side.",codeExample:`// Arrow function with array methods
+import{r as o,n as G,o as O,W,a3 as q,x as H,Y as U,O as V,a4 as J,j as e,_,H as L,v as K,A as Q,D as A,m as n,a5 as I,a6 as X,a7 as Y,e as Z,a8 as ee,a9 as te,aa as P,ab as z}from"./index-BWy-b0AA.js";import{q as se,i as ae,j as re,c as oe,k as ie,S as ne,T as ce,a as le}from"./index-zfIuJ8b_.js";const p=[{id:1,name:"JavaScript",icon:e.jsx(se,{size:36}),description:"Versatile scripting language for web development — both client-side and server-side.",codeExample:`// Arrow function with array methods
 const numbers = [1, 2, 3, 4, 5];
 const squared = numbers.map(n => n * n);
 
