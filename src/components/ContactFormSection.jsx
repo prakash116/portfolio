@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Send, User, MessageSquare, CheckCircle, Loader2, Phone } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 
-const SERVICE_ID = 'service_p52ityf';
-const TEMPLATE_ID = 'template_j2yiuja';
-const PUBLIC_KEY = 'rk3VyQHl2omE-tVMu';
+const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_p52ityf';
+const TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_j2yiuja';
+const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'rk3VyQHl2omE-tVMu';
 
 const ContactFormSection = () => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });

@@ -1,12 +1,27 @@
-# React + Vite
+# Prakash Mani Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A production-ready portfolio built with Next.js 16, React 19, Tailwind CSS 4,
+Framer Motion, and Three.js.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install dependencies with `npm install`.
+2. Copy `.env.example` to `.env.local` and update the public site URL or
+   EmailJS values when needed.
+3. Start the app with `npm run dev`.
 
-## Expanding the ESLint configuration
+## Quality checks
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `npm run lint` checks the Next.js and React code.
+- `npm run build` creates the optimized production build.
+- `npm start` runs that production build.
+
+## Routes
+
+- `/` — portfolio landing page
+- `/home` — developer overview
+- `/about` — experience and background
+- `/project` — selected projects
+- `/skill` — technical skills
+- `/services` — services
+- `/contact` — contact form and details

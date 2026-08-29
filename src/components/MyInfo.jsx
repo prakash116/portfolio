@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Mail, Phone, MapPin, Briefcase, GraduationCap, Calendar } from "lucide-react";
 import { SiReact, SiNextdotjs, SiNodedotjs, SiMongodb, SiTypescript, SiExpress } from "react-icons/si";
 import { TbBrandReactNative } from "react-icons/tb";
@@ -93,9 +94,12 @@ const ProfileCard = () => (
             }}
           />
           <div className="relative w-36 h-36 rounded-full overflow-hidden border-4 border-[#0d0d1a]">
-            <img
-              src="/portfolio/prakash.png"
+            <Image
+              src="/prakash.png"
               alt="Prakash Mani"
+              width={144}
+              height={144}
+              priority
               className="w-full h-full object-cover"
             />
           </div>

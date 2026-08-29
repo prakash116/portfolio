@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useRef, useState, useMemo } from "react";
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Database, Settings, Download, Eye, Mail, CodeXml, Server, Cpu, Sparkles } from "lucide-react";
 import { IoLogoJavascript, IoLogoNodejs, IoMdImages, IoIosChatboxes } from "react-icons/io";
@@ -11,7 +13,7 @@ import { CiRoute } from "react-icons/ci";
 import { VscVscodeInsiders } from "react-icons/vsc";
 import { BsRobot } from "react-icons/bs";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import toast from "react-hot-toast";
 
 const HeroSection = () => {
@@ -232,18 +234,22 @@ const HeroSection = () => {
     }
   };
 
+  // The Three.js scene mounts once; live values are held in refs.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { return initThree(); }, []);
   useEffect(() => {
     bgModeRef.current = bgMode;
     createBackground();
+    // createBackground intentionally follows only the selected background mode.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bgMode]);
 
   const downloadResume = () => {
-    fetch("/portfolio/PRAKASH.pdf")
+    fetch("/PRAKASH.pdf")
       .then((res) => {
         if (!res.ok) throw new Error();
         const link = document.createElement("a");
-        link.href = "/portfolio/PRAKASH.pdf";
+        link.href = "/PRAKASH.pdf";
         link.download = "Prakash Mani CV.pdf";
         document.body.appendChild(link);
         link.click();
@@ -389,7 +395,7 @@ const HeroSection = () => {
             transition={{ delay: 0.55 }}
             className="flex flex-wrap gap-3 mb-3"
           >
-            <NavLink to="/project">
+            <Link href="/project">
               <motion.button
                 whileHover={{ scale: 1.04, boxShadow: "0 0 28px rgba(34,211,238,0.4)" }}
                 whileTap={{ scale: 0.96 }}
@@ -397,8 +403,8 @@ const HeroSection = () => {
               >
                 <Eye className="w-4 h-4" /> View Projects
               </motion.button>
-            </NavLink>
-            <NavLink to="/contact">
+            </Link>
+            <Link href="/contact">
               <motion.button
                 whileHover={{ scale: 1.04, boxShadow: "0 0 28px rgba(74,222,128,0.35)" }}
                 whileTap={{ scale: 0.96 }}
@@ -406,7 +412,7 @@ const HeroSection = () => {
               >
                 <Mail className="w-4 h-4" /> Hire Me
               </motion.button>
-            </NavLink>
+            </Link>
           </motion.div>
 
           {/* Resume download */}

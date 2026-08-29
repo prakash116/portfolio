@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+"use client";
+
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -11,7 +13,7 @@ import {
   Sparkles,
   Twitter,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
 import * as THREE from "three";
 
 const socialLinks = [
@@ -72,7 +74,6 @@ const fadeUp = {
 function Footer() {
   const currentYear = new Date().getFullYear();
   const backgroundRef = useRef(null);
-  const [webglEnabled, setWebglEnabled] = useState(true);
 
   useEffect(() => {
     const container = backgroundRef.current;
@@ -83,7 +84,6 @@ function Footer() {
       canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
 
     if (!gl) {
-      setWebglEnabled(false);
       return undefined;
     }
 
@@ -225,13 +225,11 @@ function Footer() {
 
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-[#08111f] text-white">
-      {webglEnabled && (
-        <div
-          ref={backgroundRef}
-          className="absolute inset-0 z-0 opacity-90 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.92),rgba(0,0,0,0.82))]"
-          aria-hidden="true"
-        />
-      )}
+      <div
+        ref={backgroundRef}
+        className="absolute inset-0 z-0 opacity-90 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.92),rgba(0,0,0,0.82))]"
+        aria-hidden="true"
+      />
       <div className="absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.2),_transparent_26%),radial-gradient(circle_at_85%_15%,_rgba(249,115,22,0.16),_transparent_22%),linear-gradient(180deg,_rgba(8,17,31,0.68),_rgba(5,10,18,0.84))]" />
       <div className="absolute inset-x-0 top-0 z-[2] h-px bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent" />
       <div className="absolute left-10 top-12 z-[1] h-40 w-40 rounded-full bg-cyan-400/12 blur-3xl" />
@@ -298,14 +296,14 @@ function Footer() {
             <ul className="mt-5 space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.name}>
-                  <NavLink
-                    to={link.to}
+                  <Link
+                    href={link.to}
                     className="group inline-flex items-center gap-3 text-base text-slate-300 transition duration-300 hover:text-white"
                   >
                     <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-fuchsia-400 to-orange-300 transition duration-300 group-hover:scale-125" />
                     <span>{link.name}</span>
                     <ArrowUpRight className="h-4 w-4 -translate-x-1 opacity-0 transition duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
-                  </NavLink>
+                  </Link>
                 </li>
               ))}
             </ul>

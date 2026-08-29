@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
@@ -15,7 +17,7 @@ import {
   Store,
   Zap,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { TiShoppingCart } from "react-icons/ti";
 import { GiLift } from "react-icons/gi";
 import toast from "react-hot-toast";
@@ -827,7 +829,7 @@ const ProjectsPage = () => {
           <h3 className="text-2xl font-bold text-white mb-6">Ready to start your cosmic journey?</h3>
           <MotionDiv whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
-              to="/contact"
+              href="/contact"
               className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/30 transition-all"
             >
               <Sparkles className="w-5 h-5" />

@@ -1,6 +1,9 @@
+"use client";
+
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, Home, User, Mail, Code2, LayoutTemplate } from 'lucide-react';
 import * as THREE from 'three';
 import { FaServicestack } from "react-icons/fa";
@@ -170,6 +173,7 @@ const NavLogo = () => {
 };
 
 const Navbar = () => {
+  const pathname = usePathname();
   const [isOpen, setIsOpen]   = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -177,7 +181,9 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkMobile = () => window.innerWidth <= 768;
-    setIsMobile(checkMobile());
+    const initialResizeFrame = window.requestAnimationFrame(() => {
+      setIsMobile(checkMobile());
+    });
 
     const handleResize = () => {
       setIsMobile(checkMobile());
@@ -188,6 +194,7 @@ const Navbar = () => {
     window.addEventListener('resize', handleResize);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
+      window.cancelAnimationFrame(initialResizeFrame);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleScroll);
     };
@@ -203,11 +210,11 @@ const Navbar = () => {
   }, [isMobile, isOpen]);
 
   const navItems = [
-    { name: 'Home',     path: 'home',     icon: <Home size={15} /> },
-    { name: 'About Me', path: 'about',    icon: <User size={15} /> },
-    { name: 'Projects', path: 'project',  icon: <LayoutTemplate size={15} /> },
-    { name: 'Skills',   path: 'skill',    icon: <Code2 size={15} /> },
-    { name: 'Services', path: 'services', icon: <FaServicestack size={15} /> },
+    { name: 'Home',     path: '/home',     icon: <Home size={15} /> },
+    { name: 'About Me', path: '/about',    icon: <User size={15} /> },
+    { name: 'Projects', path: '/project',  icon: <LayoutTemplate size={15} /> },
+    { name: 'Skills',   path: '/skill',    icon: <Code2 size={15} /> },
+    { name: 'Services', path: '/services', icon: <FaServicestack size={15} /> },
   ];
 
   return (
@@ -227,7 +234,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between h-16 max-w-7xl mx-auto px-4 lg:px-8">
 
         {/* ── Logo ── */}
-        <NavLink to="/" aria-label="Back to homepage" className="flex items-center gap-2.5 group flex-shrink-0">
+        <Link href="/" aria-label="Back to homepage" className="flex items-center gap-2.5 group flex-shrink-0">
           <motion.div
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
@@ -250,7 +257,7 @@ const Navbar = () => {
               MERN Developer
             </p>
           </motion.div>
-        </NavLink>
+        </Link>
 
         {/* ── Desktop Nav ── */}
         {!isMobile && (
@@ -260,15 +267,17 @@ const Navbar = () => {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="flex items-center gap-0.5"
           >
-            {navItems.map((item, index) => (
-              <motion.div
-                key={item.name}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + index * 0.05 }}
-              >
-                <NavLink to={item.path}>
-                  {({ isActive }) => (
+            {navItems.map((item, index) => {
+              const isActive = pathname === item.path;
+
+              return (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + index * 0.05 }}
+                >
+                  <Link href={item.path} aria-current={isActive ? 'page' : undefined}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
@@ -290,10 +299,10 @@ const Navbar = () => {
                         />
                       )}
                     </motion.div>
-                  )}
-                </NavLink>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </motion.nav>
         )}
 
@@ -305,7 +314,7 @@ const Navbar = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <NavLink to="/contact">
+              <Link href="/contact">
                 <motion.button
                   whileHover={{ scale: 1.05, boxShadow: '0 0 22px rgba(34,211,238,0.35)' }}
                   whileTap={{ scale: 0.95 }}
@@ -314,7 +323,7 @@ const Navbar = () => {
                   <Mail size={14} />
                   Hire Me
                 </motion.button>
-              </NavLink>
+              </Link>
             </motion.div>
           )}
 
@@ -370,18 +379,21 @@ const Navbar = () => {
             <div className="h-[1px] bg-gradient-to-r from-cyan-500/30 via-blue-500/30 to-transparent" />
 
             <div className="px-4 py-4 space-y-1.5">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, x: -14 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <NavLink
-                    to={item.path}
-                    onClick={() => setIsOpen(false)}
+              {navItems.map((item, index) => {
+                const isActive = pathname === item.path;
+
+                return (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, x: -14 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
                   >
-                    {({ isActive }) => (
+                    <Link
+                      href={item.path}
+                      aria-current={isActive ? 'page' : undefined}
+                      onClick={() => setIsOpen(false)}
+                    >
                       <div className={`relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all overflow-hidden ${
                         isActive
                           ? 'bg-gradient-to-r from-cyan-500/10 to-blue-600/10 text-white border border-cyan-500/20'
@@ -399,10 +411,10 @@ const Navbar = () => {
                           </span>
                         )}
                       </div>
-                    )}
-                  </NavLink>
-                </motion.div>
-              ))}
+                    </Link>
+                  </motion.div>
+                );
+              })}
 
               {/* Mobile Hire Me */}
               <motion.div
@@ -411,7 +423,7 @@ const Navbar = () => {
                 transition={{ delay: navItems.length * 0.05 + 0.05 }}
                 className="pt-2 pb-2"
               >
-                <NavLink to="/contact" onClick={() => setIsOpen(false)}>
+                <Link href="/contact" onClick={() => setIsOpen(false)}>
                   <motion.button
                     whileTap={{ scale: 0.97 }}
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-cyan-500/25"
@@ -419,7 +431,7 @@ const Navbar = () => {
                     <Mail size={15} />
                     Hire Me
                   </motion.button>
-                </NavLink>
+                </Link>
               </motion.div>
             </div>
           </motion.div>

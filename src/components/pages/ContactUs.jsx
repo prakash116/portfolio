@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -28,6 +30,11 @@ const NETWORK_LINKS = [
   [1, 4],
   [2, 5],
 ];
+
+const seededValue = (index, salt) => {
+  const value = Math.sin((index + 1) * 12.9898 + salt * 78.233) * 43758.5453;
+  return value - Math.floor(value);
+};
 
 const WaveGrid = () => {
   const meshRef = useRef(null);
@@ -86,16 +93,18 @@ const ParticleField = () => {
     const violet = new THREE.Color('#c084fc');
 
     for (let index = 0; index < count; index += 1) {
-      const radius = 3.8 + Math.random() * 8.8;
-      const angle = Math.random() * Math.PI * 2;
-      const y = (Math.random() - 0.5) * 10.5;
-      const depth = -6 - Math.random() * 10;
-      const speed = 0.08 + Math.random() * 0.18;
-      const phase = Math.random() * Math.PI * 2;
-      const drift = 0.15 + Math.random() * 0.5;
-      const bobRange = 0.08 + Math.random() * 0.22;
-      const bobSpeed = 0.8 + Math.random() * 0.7;
-      const color = cyan.clone().lerp(Math.random() > 0.65 ? violet : blue, Math.random());
+      const radius = 3.8 + seededValue(index, 1) * 8.8;
+      const angle = seededValue(index, 2) * Math.PI * 2;
+      const y = (seededValue(index, 3) - 0.5) * 10.5;
+      const depth = -6 - seededValue(index, 4) * 10;
+      const speed = 0.08 + seededValue(index, 5) * 0.18;
+      const phase = seededValue(index, 6) * Math.PI * 2;
+      const drift = 0.15 + seededValue(index, 7) * 0.5;
+      const bobRange = 0.08 + seededValue(index, 8) * 0.22;
+      const bobSpeed = 0.8 + seededValue(index, 9) * 0.7;
+      const color = cyan
+        .clone()
+        .lerp(seededValue(index, 10) > 0.65 ? violet : blue, seededValue(index, 11));
       const offset = index * 3;
 
       positions[offset] = Math.cos(angle) * radius;

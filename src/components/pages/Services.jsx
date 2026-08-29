@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
@@ -5,7 +7,7 @@ import {
   Code, Database, Cpu, Smartphone, Globe, Server,
   Sparkles, CheckCircle2,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 // ── Static data (outside component) ─────────────────────────────────────────
 
@@ -483,7 +485,7 @@ const Services = () => {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                 <Link
-                  to="/contact"
+                  href="/contact"
                   className="inline-flex items-center gap-2 px-7 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/30 transition-all"
                 >
                   <Sparkles className="w-4 h-4" />

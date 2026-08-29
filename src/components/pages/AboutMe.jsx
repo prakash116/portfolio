@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import {
   GraduationCap, Briefcase, Code2, Rocket, Database, Server,
@@ -6,7 +8,7 @@ import {
 import { IoLogoJavascript } from "react-icons/io";
 import { SiTypescript, SiNextdotjs, SiRedux, SiGit, SiReact, SiSocketdotio } from "react-icons/si";
 import { TbBrandReactNative } from "react-icons/tb";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import * as THREE from "three";
 import ProfileCard from "../MyInfo";
 
@@ -203,18 +205,18 @@ const SectionHeader = ({ icon, title, gradient }) => (
 // ── Main component ────────────────────────────────────────────────────────────
 const AboutPage = () => {
   const mountRef = useRef(null);
-  const [webGLOk, setWebGLOk] = useState(true);
 
   // Three.js particle network background
   useEffect(() => {
-    if (!mountRef.current) return;
+    const mountNode = mountRef.current;
+    if (!mountNode) return;
 
     try {
       const c = document.createElement("canvas");
       if (!(window.WebGLRenderingContext && (c.getContext("webgl") || c.getContext("experimental-webgl")))) {
-        setWebGLOk(false); return;
+        return;
       }
-    } catch { setWebGLOk(false); return; }
+    } catch { return; }
 
     const W = window.innerWidth;
     const H = window.innerHeight;
@@ -226,7 +228,7 @@ const AboutPage = () => {
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mountRef.current.appendChild(renderer.domElement);
+    mountNode.appendChild(renderer.domElement);
 
     // ── Particle network ─────────────────────────────────────────────────────
     const N = 85;
@@ -396,8 +398,8 @@ const AboutPage = () => {
       lineGeo.dispose(); lineMat.dispose();
       shapeGeos.forEach(g => g.dispose());
       shapeMats.forEach(m => m.dispose());
-      if (mountRef.current?.contains(renderer.domElement))
-        mountRef.current.removeChild(renderer.domElement);
+      if (mountNode.contains(renderer.domElement))
+        mountNode.removeChild(renderer.domElement);
       renderer.dispose();
     };
   }, []);
@@ -406,10 +408,7 @@ const AboutPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0d0d1a] via-[#0f0c29] to-[#1a1a2e] relative">
 
       {/* Three.js stars */}
-      {webGLOk
-        ? <div ref={mountRef} className="fixed inset-0 z-0 pointer-events-none opacity-75" />
-        : <div className="fixed inset-0 z-0 bg-[#0d0d1a]" />
-      }
+      <div ref={mountRef} className="fixed inset-0 z-0 pointer-events-none opacity-75" />
 
       {/* Dot grid pattern — subtle tech texture */}
       <div
