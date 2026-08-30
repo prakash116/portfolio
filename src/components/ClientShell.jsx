@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { Toaster } from "react-hot-toast";
+import ClickSounds from "./ClickSounds";
 import Footer from "./Footer";
 import LoadingScreen, { LOADING_DURATION_MS } from "./LoadingScreen";
 import MusicPlayer from "./MusicPlayer";
@@ -30,6 +31,7 @@ export default function ClientShell({ children }) {
       </main>
       <Footer />
       <MusicPlayer />
+      <ClickSounds />
       <Toaster
         position="top-right"
         toastOptions={{
