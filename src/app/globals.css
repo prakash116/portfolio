@@ -6,6 +6,12 @@
    sync with SHORT_LANDSCAPE_MAX_PX in src/components/loading/BrainScene.jsx. */
 @custom-variant short-landscape (@media (orientation: landscape) and (max-height: 620px) and (max-width: 1023px));
 
+/* Extra-small utility size for monospace eyebrows/labels (text-2xs = 11px). */
+@theme {
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+}
+
 :root {
   color-scheme: dark;
   background: #070711;

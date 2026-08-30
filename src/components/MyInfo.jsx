@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Briefcase, GraduationCap, Calendar } from "lucide-react";
-import { SiReact, SiNextdotjs, SiNodedotjs, SiMongodb, SiTypescript, SiExpress } from "react-icons/si";
+import { SiReact, SiNextdotjs, SiNodedotjs, SiMongodb, SiTypescript, SiExpress, SiNestjs, SiPostgresql, SiSupabase } from "react-icons/si";
 import { TbBrandReactNative } from "react-icons/tb";
 
 const INFO_ITEMS = [
@@ -40,9 +40,9 @@ const INFO_ITEMS = [
 ];
 
 const STATS = [
-  { value: "2.5+", label: "Years Exp." },
-  { value: "5+", label: "Projects" },
-  { value: "10+", label: "Technologies" },
+  { value: "3+", label: "Years Exp." },
+  { value: "13+", label: "Projects" },
+  { value: "15+", label: "Technologies" },
 ];
 
 const TECH_STACK = [
@@ -52,6 +52,9 @@ const TECH_STACK = [
   { icon: <SiNodedotjs className="w-3.5 h-3.5" />,       label: "Node.js",      color: "#4ade80" },
   { icon: <SiExpress className="w-3.5 h-3.5" />,         label: "Express.js",   color: "#a78bfa" },
   { icon: <SiMongodb className="w-3.5 h-3.5" />,         label: "MongoDB",      color: "#34d399" },
+  { icon: <SiNestjs className="w-3.5 h-3.5" />,          label: "NestJS",       color: "#f87171" },
+  { icon: <SiPostgresql className="w-3.5 h-3.5" />,      label: "PostgreSQL",   color: "#7dd3fc" },
+  { icon: <SiSupabase className="w-3.5 h-3.5" />,        label: "Supabase",     color: "#4ade80" },
   { icon: <SiTypescript className="w-3.5 h-3.5" />,      label: "TypeScript",   color: "#60a5fa" },
 ];
 
@@ -114,7 +117,7 @@ const ProfileCard = () => (
           <h2 className="text-2xl font-extrabold text-white tracking-tight">Prakash Mani</h2>
           <div className="flex items-center justify-center gap-1.5 mt-1.5">
             <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-sm font-medium text-cyan-400">MERN Stack Developer</span>
+            <span className="text-sm font-medium text-cyan-400">Full-Stack Developer</span>
           </div>
           <div className="flex items-center justify-center gap-1.5 mt-1">
             <Calendar className="w-3 h-3 text-white/30" />

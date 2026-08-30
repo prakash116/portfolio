@@ -4,11 +4,11 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Database, Settings, Download, Eye, Mail, CodeXml, Server, Cpu, Sparkles } from "lucide-react";
-import { IoLogoJavascript, IoLogoNodejs, IoMdImages, IoIosChatboxes } from "react-icons/io";
+import { IoLogoJavascript, IoLogoNodejs, IoIosChatboxes } from "react-icons/io";
 import { SiExpress, SiPostman, SiSocketdotio, SiTypescript, SiGraphql, SiDocker, SiNextdotjs, SiRedux, SiFigma } from "react-icons/si";
 import { TbBrandReactNative } from "react-icons/tb";
 import { RiTailwindCssFill } from "react-icons/ri";
-import { FaReact, FaGithub, FaAws, FaShoppingCart, FaGlobe, FaUtensils } from "react-icons/fa";
+import { FaReact, FaGithub, FaAws, FaUtensils, FaMapMarkedAlt, FaBuilding, FaGraduationCap } from "react-icons/fa";
 import { CiRoute } from "react-icons/ci";
 import { VscVscodeInsiders } from "react-icons/vsc";
 import { BsRobot } from "react-icons/bs";
@@ -75,12 +75,12 @@ const HeroSection = () => {
       dotColor: "bg-green-400",
       textColor: "text-green-400",
       items: [
-        { name: "Restocare",   icon: <FaUtensils className="w-4 h-4 text-red-400" /> },
-        { name: "Dobby Mall",  icon: <FaShoppingCart className="w-4 h-4 text-pink-500" /> },
-        { name: "ZokoWorld",   icon: <FaGlobe className="w-4 h-4 text-blue-400" /> },
-        { name: "Chat App",    icon: <IoIosChatboxes className="w-4 h-4 text-cyan-500" /> },
-        { name: "Photo Drive", icon: <IoMdImages className="w-4 h-4 text-indigo-400" /> },
-        { name: "Figma",       icon: <SiFigma className="w-4 h-4 text-pink-400" /> },
+        { name: "RestoCare",    icon: <FaUtensils className="w-4 h-4 text-orange-400" /> },
+        { name: "Pzee Finder",  icon: <FaMapMarkedAlt className="w-4 h-4 text-cyan-400" /> },
+        { name: "Aurevia Tech", icon: <FaBuilding className="w-4 h-4 text-purple-400" /> },
+        { name: "Edunovas",     icon: <FaGraduationCap className="w-4 h-4 text-emerald-400" /> },
+        { name: "Chat App",     icon: <IoIosChatboxes className="w-4 h-4 text-sky-400" /> },
+        { name: "Figma",        icon: <SiFigma className="w-4 h-4 text-pink-400" /> },
       ],
     },
   ], []);
@@ -333,7 +333,7 @@ const HeroSection = () => {
             className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 bg-white/5 border border-white/10 rounded-full text-[11px] font-semibold text-white/60 backdrop-blur-sm tracking-wider"
           >
             <CodeXml className="w-3 h-3 text-cyan-400" />
-            FULL-STACK MERN DEVELOPER
+            FULL-STACK DEVELOPER · WEB &amp; MOBILE
           </motion.div>
 
           {/* Name */}
@@ -366,7 +366,7 @@ const HeroSection = () => {
             transition={{ delay: 0.35 }}
             className="text-white/50 text-sm leading-relaxed mb-8 max-w-md"
           >
-            Building scalable web & mobile apps with the MERN stack. Passionate about clean architecture, seamless UX, and turning ideas into production-ready products.
+            Building scalable web & mobile products with React Native, Next.js, NestJS, and PostgreSQL. Passionate about clean architecture, seamless UX, and shipping ideas to production.
           </motion.p>
 
           {/* Stats */}
@@ -377,8 +377,8 @@ const HeroSection = () => {
             className="flex items-center gap-8 pb-8 mb-8 border-b border-white/[0.07]"
           >
             {[
-              { val: "2.5+",  lbl: "Years Exp" },
-              { val: "5+", lbl: "Projects" },
+              { val: "3+",    lbl: "Years Exp" },
+              { val: "13+", lbl: "Projects" },
               { val: "10+", lbl: "Technologies" },
             ].map((s, i) => (
               <div key={i}>

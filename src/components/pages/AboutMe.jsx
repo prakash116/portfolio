@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   GraduationCap, Briefcase, Code2, Rocket, Database, Server,
-  Layers, CpuIcon, Terminal, Palette, Sparkles, Zap, Smartphone, Shield, RefreshCw,
+  Layers, CpuIcon, Palette, Sparkles, Zap, Smartphone, Shield, RefreshCw,
+  UtensilsCrossed, MapPinned, Building2, ArrowUpRight, FolderKanban,
 } from "lucide-react";
 import { IoLogoJavascript } from "react-icons/io";
 import { SiTypescript, SiNextdotjs, SiRedux, SiGit, SiReact, SiSocketdotio } from "react-icons/si";
@@ -49,30 +51,103 @@ const EDUCATION = [
   },
 ];
 
+// Newest first. `current` marks an ongoing role; `links` point at the matching
+// case study on /project and the live product where one exists.
 const EXPERIENCE = [
   {
-    role: "Software Developer",
-    company: "Restro Edge Pvt. Ltd.",
+    role: "Full-Stack Developer",
+    company: "RestoCare · Restro Edge Pvt. Ltd.",
     location: "Kohat Enclave, Delhi",
     duration: "July 2025 – Present",
+    type: "Full-time",
+    current: true,
+    color: "text-orange-400",
+    bg: "bg-orange-500/10",
+    border: "border-orange-500/20",
+    dotColor: "bg-orange-400",
+    icon: <UtensilsCrossed className="w-4 h-4 text-orange-400" />,
+    responsibilities: [
+      "Own the full RestoCare product surface — Customer app and Partner app on Android & iOS, the web platform, and the admin systems behind them.",
+      "Shipped both apps to Google Play and the App Store and keep them in active production.",
+      "Built the backend and API layer on NestJS with PostgreSQL and Supabase, including secure auth and role-based access.",
+      "Optimized app performance and load times through efficient component design, caching, and lazy loading.",
+    ],
+    stack: ["React Native", "Next.js", "NestJS", "PostgreSQL", "Supabase"],
+    links: [
+      { label: "Case study", href: "/project#restocare", internal: true },
+      { label: "restocare.in", href: "https://restocare.in/" },
+    ],
+  },
+  {
+    role: "Tech Head",
+    company: "Aurevia Tech",
+    location: "Remote",
+    duration: "July 2026 – Aug 2026",
+    type: "Leadership",
+    color: "text-violet-400",
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/20",
+    dotColor: "bg-violet-400",
+    icon: <Building2 className="w-4 h-4 text-violet-400" />,
+    responsibilities: [
+      "Led the technical build of the corporate website end to end — architecture, responsive UI, and delivery.",
+      "Set up a Google Sheets–driven content layer so the team updates copy without a deploy.",
+    ],
+    stack: ["Next.js", "Tailwind CSS", "Google Sheets"],
+    links: [
+      { label: "Case study", href: "/project#aurevia-tech", internal: true },
+      { label: "aureviatech.com", href: "https://aureviatech.com/" },
+    ],
+  },
+  {
+    role: "Tech Head",
+    company: "Edunovas",
+    location: "Remote",
+    duration: "July 2026 – Aug 2026",
+    type: "Leadership",
     color: "text-emerald-400",
     bg: "bg-emerald-500/10",
     border: "border-emerald-500/20",
     dotColor: "bg-emerald-400",
-    icon: <Terminal className="w-4 h-4 text-emerald-400" />,
+    icon: <GraduationCap className="w-4 h-4 text-emerald-400" />,
     responsibilities: [
-      "Developed and deployed a cross-platform mobile application using React Native for restaurant service management.",
-      "Designed and integrated RESTful APIs for seamless frontend–backend communication.",
-      "Implemented secure authentication and role-based access control using JWT and cookies.",
-      "Collaborated with cross-functional teams to deliver scalable and production-ready solutions.",
-      "Optimized application performance and reduced load time through efficient component design and lazy loading.",
+      "Led the technical development of an education-focused web platform with a responsive, scalable frontend.",
+      "Designed a Google Sheets–backed backend and content management flow for educators.",
+    ],
+    stack: ["Next.js", "Tailwind CSS", "Google Sheets"],
+    links: [
+      { label: "Case study", href: "/project#edunovas", internal: true },
+      { label: "edunovas.in", href: "https://www.edunovas.in/" },
+    ],
+  },
+  {
+    role: "Full-Stack Developer",
+    company: "Pzee Finder",
+    location: "Remote",
+    duration: "Jan 2026 – Aug 2026",
+    type: "Contract",
+    color: "text-cyan-400",
+    bg: "bg-cyan-500/10",
+    border: "border-cyan-500/20",
+    dotColor: "bg-cyan-400",
+    icon: <MapPinned className="w-4 h-4 text-cyan-400" />,
+    responsibilities: [
+      "Built the property and space discovery platform across mobile (React Native) and web (Next.js).",
+      "Developed the NestJS backend APIs with Prisma over PostgreSQL, Redis caching, and Supabase authentication.",
+      "Designed the database and auth infrastructure to scale with listing and search volume.",
+    ],
+    stack: ["React Native", "Next.js", "NestJS", "PostgreSQL", "Supabase", "Redis", "Prisma"],
+    links: [
+      { label: "Case study", href: "/project#pzee-finder", internal: true },
+      { label: "pzee.in", href: "https://pzee.in/" },
     ],
   },
   {
     role: "Web Developer & UI/UX Designer",
     company: "Dobby Virtual Mall Pvt. Ltd.",
-    location: "Delhi (Freelance)",
+    location: "Delhi",
     duration: "Jan 2025 – June 2025",
+    type: "Freelance",
     color: "text-pink-400",
     bg: "bg-pink-500/10",
     border: "border-pink-500/20",
@@ -83,12 +158,17 @@ const EXPERIENCE = [
       "Built and integrated features aligned with e-commerce and virtual mall workflows.",
       "Optimized UI performance and improved user experience across devices.",
     ],
+    stack: ["React.js", "React Native", "REST APIs", "Figma"],
+    links: [
+      { label: "Case study", href: "/project#dobby-virtual-mall", internal: true },
+    ],
   },
   {
     role: "Web Developer",
     company: "Zoko World",
     location: "Preet Vihar, Delhi",
     duration: "June 2024 – May 2025",
+    type: "Full-time",
     color: "text-cyan-400",
     bg: "bg-cyan-500/10",
     border: "border-cyan-500/20",
@@ -99,12 +179,18 @@ const EXPERIENCE = [
       "Improved UI performance and optimized overall user experience.",
       "Followed clean architecture principles and reusable component design.",
     ],
+    stack: ["React.js", "Next.js", "REST APIs"],
+    links: [
+      { label: "Case study", href: "/project#zoko-world", internal: true },
+      { label: "zokoworld.com", href: "https://www.zokoworld.com/" },
+    ],
   },
   {
     role: "Web Developer",
     company: "Passage Consultants",
     location: "Janakpuri, New Delhi",
     duration: "April 2023 – May 2024",
+    type: "Full-time",
     color: "text-violet-400",
     bg: "bg-violet-500/10",
     border: "border-violet-500/20",
@@ -115,12 +201,18 @@ const EXPERIENCE = [
       "Designed clean, modern UI to enhance client engagement and user experience.",
       "Optimized performance and ensured smooth functionality across all devices.",
     ],
+    stack: ["React.js", "SEO", "Animations"],
+    links: [
+      { label: "Case study", href: "/project#passage-consultants", internal: true },
+      { label: "passageconsultants.in", href: "https://www.passageconsultants.in/" },
+    ],
   },
   {
     role: "IT Executive",
     company: "Elite India Elevator",
     location: "Azadpur, Delhi",
     duration: "May 2022 – April 2023",
+    type: "Full-time",
     color: "text-orange-400",
     bg: "bg-orange-500/10",
     border: "border-orange-500/20",
@@ -130,6 +222,10 @@ const EXPERIENCE = [
       "Managed IT operations, handled company website and Odoo software.",
       "Prepared quotations, invoices, and AMC reports using Excel and Word.",
       "Maintained data records and supported day-to-day IT operations.",
+    ],
+    stack: ["Odoo", "Excel", "Website maintenance"],
+    links: [
+      { label: "hiliftelevator.com", href: "https://www.hiliftelevator.com/" },
     ],
   },
 ];
@@ -192,7 +288,7 @@ const PHILOSOPHY_CARDS = [
 // ── Section header component ─────────────────────────────────────────────────
 const SectionHeader = ({ icon, title, gradient }) => (
   <div className="flex items-center gap-4 mb-8">
-    <div className="w-11 h-11 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center flex-shrink-0">
+    <div className="w-11 h-11 rounded-2xl bg-white/4 border border-white/8 flex items-center justify-center shrink-0">
       {icon}
     </div>
     <div>
@@ -405,14 +501,14 @@ const AboutPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0d0d1a] via-[#0f0c29] to-[#1a1a2e] relative">
+    <div className="min-h-screen bg-linear-to-br from-[#0d0d1a] via-[#0f0c29] to-[#1a1a2e] relative">
 
       {/* Three.js stars */}
       <div ref={mountRef} className="fixed inset-0 z-0 pointer-events-none opacity-75" />
 
       {/* Dot grid pattern — subtle tech texture */}
       <div
-        className="fixed inset-0 z-[1] pointer-events-none"
+        className="fixed inset-0 z-1 pointer-events-none"
         style={{
           backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)",
           backgroundSize: "36px 36px",
@@ -420,7 +516,7 @@ const AboutPage = () => {
       />
 
       {/* Corner accent glows — small, precise */}
-      <div className="fixed inset-0 z-[2] pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 z-2 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-0 w-72 h-72 opacity-30"
           style={{ background: "radial-gradient(ellipse at top left, #06b6d4, transparent 65%)", filter: "blur(35px)" }} />
         <div className="absolute top-0 right-0 w-64 h-64 opacity-20"
@@ -432,10 +528,10 @@ const AboutPage = () => {
       </div>
 
       {/* Vignette */}
-      <div className="fixed inset-0 z-[3] bg-gradient-to-b from-[#0d0d1a]/15 via-transparent to-[#0d0d1a]/35 pointer-events-none" />
+      <div className="fixed inset-0 z-3 bg-linear-to-b from-[#0d0d1a]/15 via-transparent to-[#0d0d1a]/35 pointer-events-none" />
 
       {/* Page content */}
-      <div className="relative z-[10] pt-24 pb-20 px-4 sm:px-5 max-w-7xl mx-auto">
+      <div className="relative z-10 pt-24 pb-20 px-4 sm:px-5 max-w-7xl mx-auto">
 
         {/* ── Hero header ── */}
         <motion.div
@@ -445,11 +541,11 @@ const AboutPage = () => {
           className="text-center mb-14"
         >
           <span className="inline-block px-4 py-1.5 text-xs font-bold tracking-[0.2em] uppercase text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 rounded-full mb-4">
-            MERN Stack Developer
+            Full-Stack Developer
           </span>
           <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-4">
             About{" "}
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">
               Me
             </span>
           </h1>
@@ -478,17 +574,17 @@ const AboutPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.12 }}
                 viewport={{ once: true }}
-                className="relative rounded-2xl border border-white/[0.07] bg-white/[0.025] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all group overflow-hidden backdrop-blur-sm"
+                className="relative rounded-2xl border border-white/7 bg-white/2.5 hover:bg-white/5 hover:border-white/12 transition-all group overflow-hidden backdrop-blur-sm"
               >
                 {/* Colored top bar */}
-                <div className="h-[3px] w-full" style={{ background: edu.topBar }} />
+                <div className="h-0.75 w-full" style={{ background: edu.topBar }} />
 
                 <div className="p-6 flex gap-5">
                   {/* Left — main content */}
                   <div className="flex-1 min-w-0">
                     {/* Icon + degree */}
                     <div className="flex items-center gap-3 mb-3">
-                      <div className={`w-11 h-11 rounded-2xl ${edu.bg} border ${edu.border} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                      <div className={`w-11 h-11 rounded-2xl ${edu.bg} border ${edu.border} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                         {edu.icon}
                       </div>
                       <h3 className="text-[15px] font-bold text-white leading-snug">{edu.degree}</h3>
@@ -496,7 +592,7 @@ const AboutPage = () => {
 
                     {/* Institution + location */}
                     <p className={`text-sm font-semibold ${edu.color} mb-0.5`}>{edu.institution}</p>
-                    <p className="text-[11px] text-white/30 mb-3">{edu.location}</p>
+                    <p className="text-2xs text-white/30 mb-3">{edu.location}</p>
 
                     {/* Description */}
                     <p className="text-xs text-white/40 leading-relaxed mb-4">{edu.description}</p>
@@ -504,7 +600,7 @@ const AboutPage = () => {
                     {/* Subject tags */}
                     <div className="flex flex-wrap gap-1.5">
                       {edu.tags.map((tag, j) => (
-                        <span key={j} className="text-[10px] px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.07] text-white/50">
+                        <span key={j} className="text-[10px] px-2.5 py-1 rounded-full bg-white/4 border border-white/7 text-white/50">
                           {tag}
                         </span>
                       ))}
@@ -512,7 +608,7 @@ const AboutPage = () => {
                   </div>
 
                   {/* Right — year + type */}
-                  <div className="flex flex-col items-end justify-between gap-3 flex-shrink-0">
+                  <div className="flex flex-col items-end justify-between gap-3 shrink-0">
                     <span className={`text-[10px] font-mono ${edu.color} ${edu.bg} border ${edu.border} px-2.5 py-1 rounded-full whitespace-nowrap`}>
                       {edu.year}
                     </span>
@@ -520,7 +616,7 @@ const AboutPage = () => {
                       <div className={`w-8 h-8 rounded-xl ${edu.bg} border ${edu.border} flex items-center justify-center opacity-50`}>
                         {edu.icon}
                       </div>
-                      <p className="text-[10px] text-white/25 text-right leading-tight max-w-[80px]">{edu.type}</p>
+                      <p className="text-[10px] text-white/25 text-right leading-tight max-w-20">{edu.type}</p>
                     </div>
                   </div>
                 </div>
@@ -544,18 +640,18 @@ const AboutPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07 }}
                 viewport={{ once: true }}
-                className="p-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] hover:bg-white/[0.05] hover:border-purple-500/20 transition-all group"
+                className="p-5 rounded-2xl border border-white/6 bg-white/2.5 hover:bg-white/5 hover:border-purple-500/20 transition-all group"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-white/[0.05] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
                       {skill.icon}
                     </div>
                     <span className="text-sm font-semibold text-white">{skill.name}</span>
                   </div>
                   <span className="text-sm font-bold text-white/60">{skill.level}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-white/6 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     whileInView={{ width: `${skill.level}%` }}
@@ -579,7 +675,7 @@ const AboutPage = () => {
           />
           <div className="relative">
             {/* Vertical line */}
-            <div className="absolute left-[18px] top-2 bottom-2 w-px bg-gradient-to-b from-green-500/40 via-cyan-500/20 to-transparent" />
+            <div className="absolute left-4.5 top-2 bottom-2 w-px bg-linear-to-b from-green-500/40 via-cyan-500/20 to-transparent" />
 
             <div className="space-y-5">
               {EXPERIENCE.map((exp, i) => (
@@ -592,26 +688,37 @@ const AboutPage = () => {
                   className="relative pl-12"
                 >
                   {/* Timeline dot */}
-                  <div className="absolute left-[11px] top-5 w-4 h-4 rounded-full border-2 border-white/20 bg-[#0d0d1a] flex items-center justify-center">
-                    <div className={`w-1.5 h-1.5 rounded-full ${exp.dotColor}`} />
+                  <div className="absolute left-2.75 top-5 w-4 h-4 rounded-full border-2 border-white/20 bg-[#0d0d1a] flex items-center justify-center">
+                    {exp.current && (
+                      <span className={`absolute inset-0 rounded-full ${exp.dotColor} opacity-40 animate-ping`} aria-hidden="true" />
+                    )}
+                    <div className={`relative w-1.5 h-1.5 rounded-full ${exp.dotColor}`} />
                   </div>
 
-                  <div className="p-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] hover:bg-white/[0.05] hover:border-white/[0.1] transition-all group">
+                  <div className="p-5 rounded-2xl border border-white/6 bg-white/2.5 hover:bg-white/5 hover:border-white/10 transition-all group">
                     {/* Header */}
                     <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
                       <div className="flex items-center gap-2.5">
-                        <div className={`w-8 h-8 rounded-lg ${exp.bg} border ${exp.border} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                        <div className={`w-8 h-8 rounded-lg ${exp.bg} border ${exp.border} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
                           {exp.icon}
                         </div>
                         <div>
-                          <h3 className="text-sm font-bold text-white leading-tight">{exp.role}</h3>
+                          <h3 className="text-sm font-bold text-white leading-tight flex items-center gap-2 flex-wrap">
+                            {exp.role}
+                            {exp.type && (
+                              <span className="text-[9px] font-mono uppercase tracking-widest text-white/40 border border-white/10 rounded-full px-1.5 py-0.5">
+                                {exp.type}
+                              </span>
+                            )}
+                          </h3>
                           <p className={`text-xs ${exp.color} mt-0.5`}>{exp.company}</p>
                           {exp.location && (
                             <p className="text-[10px] text-white/30 mt-0.5">{exp.location}</p>
                           )}
                         </div>
                       </div>
-                      <span className={`text-[10px] font-mono ${exp.color} ${exp.bg} border ${exp.border} px-2.5 py-1 rounded-full whitespace-nowrap`}>
+                      <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono ${exp.color} ${exp.bg} border ${exp.border} px-2.5 py-1 rounded-full whitespace-nowrap`}>
+                        {exp.current && <span className={`w-1.5 h-1.5 rounded-full ${exp.dotColor} animate-pulse`} aria-hidden="true" />}
                         {exp.duration}
                       </span>
                     </div>
@@ -620,11 +727,44 @@ const AboutPage = () => {
                     <ul className="space-y-1.5">
                       {exp.responsibilities.map((item, j) => (
                         <li key={j} className="flex items-start gap-2 text-sm text-white/45">
-                          <span className="text-cyan-500 mt-0.5 flex-shrink-0 text-xs">▹</span>
+                          <span className="text-cyan-500 mt-0.5 shrink-0 text-xs">▹</span>
                           {item}
                         </li>
                       ))}
                     </ul>
+
+                    {/* Stack + links */}
+                    {(exp.stack?.length || exp.links?.length) ? (
+                      <div className="mt-4 pt-3 border-t border-white/6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                        {exp.stack?.length ? (
+                          <ul className="flex flex-wrap gap-1.5">
+                            {exp.stack.map((tech) => (
+                              <li key={tech} className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${exp.color} ${exp.bg} border ${exp.border}`}>
+                                {tech}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
+                        {exp.links?.length ? (
+                          <div className="flex flex-wrap gap-1.5">
+                            {exp.links.map((link) => {
+                              const cls = "inline-flex items-center gap-1 text-2xs font-semibold text-white/60 hover:text-white border border-white/10 hover:border-white/25 rounded-lg px-2 py-1 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-cyan-400";
+                              return link.internal ? (
+                                <Link key={link.href} href={link.href} className={cls}>
+                                  <FolderKanban className="w-3 h-3" aria-hidden="true" />
+                                  {link.label}
+                                </Link>
+                              ) : (
+                                <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className={cls}>
+                                  {link.label}
+                                  <ArrowUpRight className="w-3 h-3" aria-hidden="true" />
+                                </a>
+                              );
+                            })}
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </div>
                 </motion.div>
               ))}
@@ -635,11 +775,11 @@ const AboutPage = () => {
         {/* ── Philosophy ── */}
         <section>
           <div
-            className="relative rounded-3xl border border-white/[0.07] overflow-hidden"
+            className="relative rounded-3xl border border-white/7 overflow-hidden"
             style={{ background: "linear-gradient(135deg, rgba(13,13,26,0.97), rgba(15,12,41,0.94))" }}
           >
             {/* Gradient top bar */}
-            <div className="h-[2px] w-full" style={{ background: "linear-gradient(to right, #22d3ee, #a855f7, #f472b6)" }} />
+            <div className="h-0.5 w-full" style={{ background: "linear-gradient(to right, #22d3ee, #a855f7, #f472b6)" }} />
 
             {/* Ambient glows */}
             <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-cyan-500/5 blur-3xl pointer-events-none" />
@@ -665,7 +805,7 @@ const AboutPage = () => {
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  className="lg:w-72 p-5 rounded-2xl border border-cyan-500/15 bg-cyan-500/[0.04] flex-shrink-0"
+                  className="lg:w-72 p-5 rounded-2xl border border-cyan-500/15 bg-cyan-500/4 shrink-0"
                 >
                   <span className="text-5xl text-cyan-500/30 font-serif leading-none">"</span>
                   <p className="text-sm text-white/60 italic leading-relaxed -mt-3">
@@ -685,7 +825,7 @@ const AboutPage = () => {
                     transition={{ delay: i * 0.07 }}
                     whileHover={{ y: -4 }}
                     viewport={{ once: true }}
-                    className={`p-5 rounded-2xl border ${card.border} bg-white/[0.025] hover:bg-white/[0.05] transition-all group cursor-default`}
+                    className={`p-5 rounded-2xl border ${card.border} bg-white/2.5 hover:bg-white/5 transition-all group cursor-default`}
                   >
                     <div className={`w-10 h-10 rounded-xl ${card.bg} border ${card.border} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
                       {card.icon}

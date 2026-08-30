@@ -254,7 +254,7 @@ const Navbar = () => {
               Prakash Mani
             </p>
             <p className="text-[8px] sm:text-[9px] text-white/25 font-medium tracking-[0.2em] uppercase leading-none">
-              MERN Developer
+              Full-Stack Developer
             </p>
           </motion.div>
         </Link>
