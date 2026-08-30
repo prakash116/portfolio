@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Toaster } from "react-hot-toast";
 import Footer from "./Footer";
 import LoadingScreen, { LOADING_DURATION_MS } from "./LoadingScreen";
+import MusicPlayer from "./MusicPlayer";
 import Navbar from "./Navbar";
 import PageTransition from "./PageTransition";
 
@@ -28,6 +29,7 @@ export default function ClientShell({ children }) {
         <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
+      <MusicPlayer />
       <Toaster
         position="top-right"
         toastOptions={{

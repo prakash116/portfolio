@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Barlow_Condensed, JetBrains_Mono } from "next/font/google";
 import BrainScene, { PALETTE } from "./loading/BrainScene";
@@ -27,6 +28,9 @@ const GRAIN =
 export default function LoadingScreen() {
   const reduceMotion = useReducedMotion();
   const seconds = LOADING_DURATION_MS / 1000;
+  // Measured by BrainScene so the brain sizes itself around the real copy
+  // block instead of a guessed height.
+  const copyRef = useRef(null);
 
   // `initial` is what gets server-rendered into the style attribute, so it must
   // not depend on reduced motion: that preference is only known on the client,
@@ -69,7 +73,11 @@ export default function LoadingScreen() {
         aria-hidden="true"
       />
 
-      <BrainScene reduceMotion={reduceMotion} durationMs={LOADING_DURATION_MS} />
+      <BrainScene
+        reduceMotion={reduceMotion}
+        durationMs={LOADING_DURATION_MS}
+        copyRef={copyRef}
+      />
 
       {/* Vignette, above the scene, to seat the glow in the dark. */}
       <div
@@ -77,8 +85,12 @@ export default function LoadingScreen() {
         aria-hidden="true"
       />
 
-      {/* Copy: stacked under the brain on phones, beside it on wide screens. */}
-      <div className="absolute inset-x-6 bottom-[7vh] z-10 text-center lg:inset-x-auto lg:inset-y-0 lg:right-[7vw] lg:flex lg:w-[38vw] lg:max-w-136 lg:flex-col lg:justify-center lg:text-left">
+      {/* Copy: stacked under the brain on portrait phones, beside it on wide
+          screens and on short landscape viewports (phones held sideways). */}
+      <div
+        ref={copyRef}
+        className="absolute inset-x-6 bottom-[max(6dvh,env(safe-area-inset-bottom))] z-10 text-center lg:inset-x-auto lg:inset-y-0 lg:right-[7vw] lg:flex lg:w-[38vw] lg:max-w-136 lg:flex-col lg:justify-center lg:text-left short-landscape:inset-x-auto short-landscape:inset-y-0 short-landscape:right-[6vw] short-landscape:flex short-landscape:w-[44vw] short-landscape:max-w-96 short-landscape:flex-col short-landscape:justify-center short-landscape:text-left"
+      >
         <motion.p
           className={`${mono.className} text-[10px] uppercase tracking-[0.42em] sm:text-xs`}
           style={{ color: PALETTE.circuit }}
@@ -90,7 +102,7 @@ export default function LoadingScreen() {
         </motion.p>
 
         <motion.p
-          className="mt-4 text-[clamp(1.1rem,5.2vw,1.9rem)] font-medium leading-none tracking-wide lg:text-[clamp(1.6rem,2.1vw,2.4rem)]"
+          className="mt-4 text-[clamp(1.1rem,5.2vw,1.9rem)] font-medium leading-none tracking-wide lg:text-[clamp(1.6rem,2.1vw,2.4rem)] short-landscape:mt-2 short-landscape:text-[clamp(1rem,4.5vh,1.5rem)]"
           style={{ color: "rgba(232,244,255,0.7)" }}
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -100,7 +112,7 @@ export default function LoadingScreen() {
         </motion.p>
 
         <motion.h1
-          className="mt-2 text-[clamp(2.2rem,12.5vw,4.5rem)] font-bold uppercase leading-[0.9] tracking-[-0.01em] lg:mt-3 lg:text-[clamp(3.4rem,4.6vw,5.4rem)]"
+          className="mt-2 text-[clamp(2.2rem,12.5vw,4.5rem)] font-bold uppercase leading-[0.9] tracking-[-0.01em] lg:mt-3 lg:text-[clamp(3.4rem,4.6vw,5.4rem)] short-landscape:mt-1 short-landscape:text-[clamp(1.8rem,11vh,3.4rem)]"
           style={{ textShadow: "0 0 38px rgba(56,189,248,0.45)" }}
           initial={{ opacity: 0, y: 22, filter: "blur(6px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -110,7 +122,7 @@ export default function LoadingScreen() {
         </motion.h1>
 
         <motion.span
-          className="mx-auto mt-3 block h-0.75 w-28 sm:w-36 lg:mx-0 lg:mt-4 lg:w-44"
+          className="mx-auto mt-3 block h-0.75 w-28 sm:w-36 lg:mx-0 lg:mt-4 lg:w-44 short-landscape:mx-0 short-landscape:mt-2 short-landscape:w-28"
           style={{
             originX: 0,
             background: `linear-gradient(90deg, ${PALETTE.circuit}, ${PALETTE.amber})`,
@@ -123,7 +135,7 @@ export default function LoadingScreen() {
         />
 
         <motion.p
-          className="mt-4 text-[clamp(1.4rem,7vw,2.5rem)] font-medium leading-none lg:mt-5 lg:text-[clamp(2rem,2.6vw,3rem)]"
+          className="mt-4 text-[clamp(1.4rem,7vw,2.5rem)] font-medium leading-none lg:mt-5 lg:text-[clamp(2rem,2.6vw,3rem)] short-landscape:mt-2 short-landscape:text-[clamp(1.1rem,6.5vh,2rem)]"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={enter(0.85)}
@@ -138,7 +150,7 @@ export default function LoadingScreen() {
         </motion.p>
 
         <motion.div
-          className="mx-auto mt-8 w-full max-w-xs lg:mx-0 lg:mt-10 lg:max-w-sm"
+          className="mx-auto mt-8 w-full max-w-xs lg:mx-0 lg:mt-10 lg:max-w-sm short-landscape:mx-0 short-landscape:mt-4 short-landscape:max-w-64"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={enter(1.1)}
@@ -167,7 +179,7 @@ export default function LoadingScreen() {
       </div>
 
       <motion.p
-        className={`${mono.className} absolute bottom-8 left-10 z-10 hidden text-xs uppercase tracking-[0.3em] sm:block`}
+        className={`${mono.className} absolute bottom-8 left-10 z-10 hidden text-xs uppercase tracking-[0.3em] sm:block short-landscape:hidden`}
         style={{ color: "rgba(232,244,255,0.35)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

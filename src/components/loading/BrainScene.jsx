@@ -38,10 +38,13 @@ const CAMERA_FOV = 38;
 const ASSEMBLE_SECONDS = 1.3;
 const REVEAL_FRACTION = 0.62; // circuits finish lighting up this far into the load
 
-// Stacked-layout budgeting, in CSS pixels. The copy block is bottom-anchored at
-// 7vh; COPY_BLOCK_PX is a safe upper bound on its height so the brain can be
-// sized to sit above it.
+// Stacked-layout budgeting, in CSS pixels. The copy block is measured live via
+// copyRef; COPY_BLOCK_PX is only the fallback bound when no ref is provided.
 const WIDE_BREAKPOINT_PX = 1024;
+// Kept in sync with the `short-landscape` custom variant in globals.css:
+// below the lg breakpoint, landscape viewports up to this height put the copy
+// beside the brain instead of underneath it.
+const SHORT_LANDSCAPE_MAX_PX = 620;
 const COPY_BLOCK_PX = 250;
 const TOP_MARGIN_PX = 24;
 const SAFETY_PX = 30;
@@ -793,7 +796,11 @@ function createChip(chipTexture) {
 /* Component                                                           */
 /* ------------------------------------------------------------------ */
 
-export default function BrainScene({ reduceMotion = false, durationMs = 3200 }) {
+export default function BrainScene({
+  reduceMotion = false,
+  durationMs = 3200,
+  copyRef = null,
+}) {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -902,25 +909,43 @@ export default function BrainScene({ reduceMotion = false, durationMs = 3200 }) 
       const height = mountNode.clientHeight || window.innerHeight;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
+      // Let three.js also set the canvas CSS size: without it the canvas lays
+      // out at width * devicePixelRatio CSS pixels and overflows the viewport
+      // on any display scaled above 100% (every phone, most laptops).
+      renderer.setSize(width, height);
 
       const visibleHeight = 2 * CAMERA_Z * Math.tan(THREE.MathUtils.degToRad(CAMERA_FOV / 2));
       const visibleWidth = visibleHeight * camera.aspect;
-      // Matches the `lg:` breakpoint at which the copy moves beside the brain.
-      // Below it the copy is stacked underneath, so the brain has to make room.
-      const wide = width >= WIDE_BREAKPOINT_PX;
+      // Matches the breakpoints at which the copy sits beside the brain: the
+      // `lg:` breakpoint, plus short landscape viewports (phones held
+      // sideways) via the `short-landscape` variant. Otherwise the copy is
+      // stacked underneath, so the brain has to make room.
+      const wide =
+        width >= WIDE_BREAKPOINT_PX ||
+        (width >= height && height <= SHORT_LANDSCAPE_MAX_PX);
 
       if (wide) {
-        const scale = Math.min(1.0, Math.max(0.8, visibleWidth / 13));
+        const scale = Math.min(
+          1.0,
+          Math.max(0.8, visibleWidth / 13),
+          // Never let the brain outgrow the viewport height.
+          (visibleHeight * 0.95) / (BRAIN_HEIGHT * UNIT),
+        );
         group.scale.setScalar(scale);
         group.position.set(-visibleWidth * 0.2, 0.1, 0);
         shared.uGroupScale.value = scale;
       } else {
         // Fit the brain into the band above the stacked copy, measured in CSS
-        // pixels and converted to world units.
+        // pixels and converted to world units. offsetTop ignores the entrance
+        // transforms framer applies inside the copy block, so the measurement
+        // is stable while the copy animates in.
+        const copyEl = copyRef ? copyRef.current : null;
+        const copyTopPx = copyEl
+          ? copyEl.offsetTop
+          : height - height * 0.07 - COPY_BLOCK_PX;
         const bandPx = Math.max(
           height * 0.3,
-          height - height * 0.07 - COPY_BLOCK_PX - TOP_MARGIN_PX - SAFETY_PX,
+          copyTopPx - TOP_MARGIN_PX - SAFETY_PX,
         );
         const brainWorldHeight = BRAIN_HEIGHT * UNIT;
         const scale = Math.min(
@@ -962,7 +987,16 @@ export default function BrainScene({ reduceMotion = false, durationMs = 3200 }) 
     }
     window.addEventListener("resize", onResize);
 
+    // The copy block changes height as the web fonts land and as text wraps,
+    // which moves the band the brain has to fit into.
+    let copyObserver;
+    if (copyRef?.current && typeof ResizeObserver !== "undefined") {
+      copyObserver = new ResizeObserver(onResize);
+      copyObserver.observe(copyRef.current);
+    }
+
     return () => {
+      if (copyObserver) copyObserver.disconnect();
       window.removeEventListener("resize", onResize);
       window.cancelAnimationFrame(frameId);
       [cortex, nodeField, pulses, motes].forEach(({ geometry, material }) => {
@@ -984,7 +1018,7 @@ export default function BrainScene({ reduceMotion = false, durationMs = 3200 }) 
         mountNode.removeChild(renderer.domElement);
       }
     };
-  }, [reduceMotion, durationMs]);
+  }, [reduceMotion, durationMs, copyRef]);
 
   return <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />;
 }
