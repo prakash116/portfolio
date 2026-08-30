@@ -16,6 +16,16 @@ Framer Motion, and Three.js.
 - `npm run build` creates the optimized production build.
 - `npm start` runs that production build.
 
+## Vercel deployment
+
+This repository is configured as a Next.js project through `vercel.json`. The
+configuration intentionally overrides any Vite preset retained by the existing
+Vercel project after the migration from Vite to Next.js.
+
+Push the verified source to the production branch connected in Vercel. Vercel
+will install dependencies and run `npm run build`; no custom output directory is
+required for Next.js.
+
 ## Routes
 
 - `/` — portfolio landing page
